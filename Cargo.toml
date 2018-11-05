@@ -1,0 +1,10 @@
+[package]
+name = "commandlines"
+version = "0.0.1"
+authors = ["Chris Simpkins <chris@sourcefoundry.org>"]
+repository = "https://github.com/chrissimpkins/commandlines-rust"
+readme = "README.md"
+license = "MIT"
+license-file = "LICENSE"
+
+[dependencies]
