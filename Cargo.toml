@@ -1,6 +1,7 @@
 [package]
 name = "commandlines"
-version = "0.0.1"
+version = "0.0.2"
+description = "A command line argument parsing library for Rust"
 authors = ["Chris Simpkins <chris@sourcefoundry.org>"]
 repository = "https://github.com/chrissimpkins/commandlines-rust"
 readme = "README.md"
