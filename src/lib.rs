@@ -1,10 +1,9 @@
-#![allow(dead_code)]
 
 use std::fmt;
 
 pub struct Command {
-    argv: Vec<String>,
-    argc: usize,
+    pub argv: Vec<String>,
+    pub argc: usize,
 }
 
 // Traits
