@@ -45,7 +45,6 @@ impl Command {
     }
 }
 
-
 // Tests
 #[cfg(test)]
 mod tests {
