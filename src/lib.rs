@@ -17,8 +17,7 @@ impl fmt::Display for Command {
             commandstring.push_str(&substring[..]);
             commandstring.push_str(" ");
         }
-        let commandstring = &commandstring[..].trim_right();
-        write!(f, "Command: '{}'", commandstring)
+        write!(f, "Command: '{}'", &commandstring[..].trim_right())
     }
 }
 
@@ -30,8 +29,7 @@ impl fmt::Debug for Command {
             commandstring.push_str(&substring[..]);
             commandstring.push_str(" ");
         }
-        let commandstring = &commandstring[..].trim_right();
-        write!(f, "Command: '{}'", commandstring)
+        write!(f, "Command: '{}'", &commandstring[..].trim_right())
     }
 }
 
