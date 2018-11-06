@@ -1,3 +1,4 @@
+mod parsers;
 
 use std::fmt;
 
@@ -50,19 +51,19 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_command_argv_instantiation() {
+    fn command_instantiation_argv() {
         let c = Command::new(vec!["test".to_string(), "--help".to_string()]);
         assert!(c.argv == vec!["test".to_string(), "--help".to_string()]);
     }
 
     #[test]
-    fn test_command_argc_instantiation_one_arg() {
+    fn command_instantiation_argc_one_arg() {
         let c = Command::new(vec!["test".to_string()]);
         assert!(c.argc == 1);
     }
 
     #[test]
-    fn test_command_argc_instantiation_two_args() {
+    fn command_instantiation_argc_two_args() {
         let c = Command::new(vec!["test".to_string(), "--help".to_string()]);
         assert!(c.argc == 2);
     }
