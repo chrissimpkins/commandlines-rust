@@ -1,5 +1,5 @@
 
-fn parse_options(argv: Vec<String>) -> Vec<String> {
+pub fn parse_options(argv: &Vec<String>) -> Vec<String> {
     let mut options: Vec<String> = Vec::new();
     for arg in argv {
         if arg.starts_with("-") {
@@ -8,7 +8,8 @@ fn parse_options(argv: Vec<String>) -> Vec<String> {
                 let definition = &definition_option_vec[0];
                 options.push(definition.to_string());
             } else {
-                options.push(arg);
+                let option = &arg[..];
+                options.push(option.to_string());
             }
         }
     }
@@ -16,7 +17,7 @@ fn parse_options(argv: Vec<String>) -> Vec<String> {
     options
 }
 
-fn is_definition_option(needle: &str) -> bool {
+pub fn is_definition_option(needle: &str) -> bool {
     if needle.contains("=") {
         true
     } else {
@@ -24,7 +25,7 @@ fn is_definition_option(needle: &str) -> bool {
     }
 }
 
-fn get_definition_parts(needle: &str) -> Vec<String> {
+pub fn get_definition_parts(needle: &str) -> Vec<String> {
     let opt_def: Vec<_> = needle.split('=').collect();
     vec![String::from(opt_def[0]), String::from(opt_def[1])]
 }
@@ -53,7 +54,7 @@ mod tests {
             String::from("--defoption")
         ];
         
-        assert!(parse_options(test_vec) == expected_vec);
+        assert!(parse_options(&test_vec) == expected_vec);
     }
 
     #[test]
