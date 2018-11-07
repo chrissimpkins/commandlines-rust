@@ -8,8 +8,7 @@ pub fn parse_options(argv: &Vec<String>) -> Vec<String> {
                 let option = &option_definition_vec[0];
                 options.push(option.to_string());
             } else {
-                let option = &arg[..];
-                options.push(option.to_string());
+                options.push(arg.clone());
             }
         }
     }
