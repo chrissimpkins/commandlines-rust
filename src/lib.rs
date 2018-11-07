@@ -1,3 +1,6 @@
+// Copyright 2018 Christopher Simpkins
+// Licensed under the MIT license
+
 //! `commandlines` is a simple, functional command line argument
 //! parsing library for the development of Rust command line interface
 //! (CLI) applications.

@@ -1,3 +1,6 @@
+// Copyright 2018 Christopher Simpkins
+// Licensed under the MIT license
+
 //! Command line string parsing support
 
 /// Returns `Vec<String>` of command line options in a command line string
