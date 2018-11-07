@@ -1,15 +1,37 @@
-//! `commandlines` is a simple, functional command line argument 
-//! parsing library for the development of Rust command line interface 
+//! `commandlines` is a simple, functional command line argument
+//! parsing library for the development of Rust command line interface
 //! (CLI) applications.
 
-mod parsers;
+pub mod parsers;
 
 use std::fmt;
 
+/// A command line argument object
+///
+/// The `Command` struct defines fields that hold parsed command line argument
+/// data and provides methods that can be used to define the logic of a command
+/// line interface application.
+///
+/// # Examples
+/// ## Instantiation
+/// Instantiate a `Command` struct with a `Vec<String>` that is defined with `std::env::args().collect()`:
+///
+/// ```
+/// extern crate commandlines;
+///
+/// use commandlines::Command;
+///
+/// let c = Command::new(std::env::args().collect());
+/// ```
 #[derive(Debug)]
 pub struct Command {
+    /// Vector of command line strings defined on instantiation
     pub argv: Vec<String>,
+    /// number of strings in `Command.argv`
     pub argc: usize,
+    /// executable at index position `0` of `Command.argv`
+    pub executable: String,
+    /// Vector of command line options in `Command.argv`
     pub options: Vec<String>,
 }
 
@@ -41,29 +63,98 @@ impl fmt::Display for Command {
 
 // Methods
 impl Command {
+    /// Instantiates and returns a new `Command` object
+    ///
+    /// # Arguments
+    ///
+    /// * `arguments` - a `Vec<String>` of command line arguments
+    ///
+    /// # Remarks
+    ///
+    /// The command line arguments passed to the executable should be defined with `std::env::args().collect()`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// extern crate commandlines;
+    ///
+    /// let c = commandlines::Command::new(std::env::args().collect());
+    /// ```
     pub fn new(arguments: Vec<String>) -> Self {
-        let vec_size = arguments.len();
+        let arguments_definition = arguments.clone();
+        let executable_definition = &arguments[0];
+        let size_definition = arguments.len();
         let vec_options = parsers::parse_options(&arguments);
 
         Command {
-            argv: arguments,
-            argc: vec_size,
+            argv: arguments_definition,
+            argc: size_definition,
+            executable: executable_definition.to_string(),
             options: vec_options,
         }
     }
 
+    /// Returns a boolean for the question "Does the command include any arguments?"
+    ///
+    /// # Remarks
+    /// An argument is defined as a command line string after the executable.
+    /// The executable at index position `0` in the `Vec<String>` returned by
+    /// `std::env::args().collect()` is not part of this definition.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c = commandlines::Command::new(std::env::args().collect());
+    /// if !c.has_args() {
+    ///    eprintln!("{}", String::from("Missing arguments"));
+    /// }
+    /// ```
     pub fn has_args(&self) -> bool {
         self.argv[1..].len() > 0
     }
 
+    /// Returns a boolean for the question "Does the command include any options?"
+    ///
+    /// # Remarks
+    /// An option is defined as a command line string that starts with one or two hyphen characters.
+    /// This definition includes standard long (e.g., `--longoption`) and short (e.g., `-s`) command line options.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c = commandlines::Command::new(std::env::args().collect());
+    /// if c.has_options() {
+    ///    // start application-specific option parsing logic
+    /// }
+    /// ```
     pub fn has_options(&self) -> bool {
         self.options.len() > 0
     }
 
+    /// Returns a boolean for the question "Does the command include the argument string `needle`?" at any index
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c = commandlines::Command::new(std::env::args().collect());
+    /// if c.contains_arg("spam") {
+    ///     // you received spam somewhere in the command
+    /// }
+    /// ```
     pub fn contains_arg(&self, needle: &str) -> bool {
         self.argv[1..].contains(&String::from(needle))
     }
 
+    /// Returns a boolean for the question "Does the command include the option string `needle`?" at any index
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c = commandlines::Command::new(std::env::args().collect());
+    /// if c.contains_option("--help") {
+    ///     // you have a standard request for help documentation
+    /// }
+    /// ````
     pub fn contains_option(&self, needle: &str) -> bool {
         self.options.contains(&String::from(needle))
     }
