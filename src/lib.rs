@@ -1,9 +1,9 @@
 // Copyright 2018 Christopher Simpkins
 // Licensed under the MIT license
 
-//! `commandlines` is a simple, functional command line argument
-//! parsing library for the development of Rust command line interface
-//! (CLI) applications.
+//! `commandlines` is a simple, functional command line argument parsing library for the development of Rust command line interface (CLI) applications.
+//!
+//! It is currently in development and is not stable for production use.
 
 pub mod parsers;
 
@@ -11,9 +11,7 @@ use std::fmt;
 
 /// A command line argument object
 ///
-/// The `Command` struct defines fields that hold parsed command line argument
-/// data and provides methods that can be used to define the logic of a command
-/// line interface application.
+/// The `Command` struct defines fields that hold parsed command line argument data and provides methods that can be used to define the logic of a command line interface application.
 ///
 /// # Examples
 /// ## Instantiation
@@ -100,9 +98,7 @@ impl Command {
     /// Returns a boolean for the question "Does the command include any arguments?"
     ///
     /// # Remarks
-    /// An argument is defined as a command line string after the executable.
-    /// The executable at index position `0` in the `Vec<String>` returned by
-    /// `std::env::args().collect()` is not part of this definition.
+    /// An argument is defined as a command line string after the executable. The executable at index position `0` in the `Vec<String>` returned by `std::env::args().collect()` is not part of this definition.
     ///
     /// # Examples
     ///
@@ -119,8 +115,7 @@ impl Command {
     /// Returns a boolean for the question "Does the command include any options?"
     ///
     /// # Remarks
-    /// An option is defined as a command line string that starts with one or two hyphen characters.
-    /// This definition includes standard long (e.g., `--longoption`) and short (e.g., `-s`) command line options.
+    /// An option is defined as a command line string that starts with one or two hyphen characters. This definition includes standard long (e.g., `--longoption`) and short (e.g., `-s`) command line options.
     ///
     /// # Examples
     ///

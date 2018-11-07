@@ -4,4 +4,4 @@
 
 ## About
 
-commandlines is a command line argument parsing library for Rust command line interface application development.  The project is in an unstable phase of development.  Please see the documentation at [https://docs.rs/commandlines] for additional details.
+`commandlines` is a command line argument parsing library for Rust command line interface application development.  The project is in an unstable phase of development.  Please see the documentation at [https://docs.rs/commandlines] for additional details.
