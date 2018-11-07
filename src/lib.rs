@@ -164,21 +164,27 @@ mod tests {
     use super::*;
 
     #[test]
-    fn command_instantiation_argv() {
+    fn command_instantiation_argv_field() {
         let c = Command::new(vec!["test".to_string(), "--help".to_string()]);
         assert!(c.argv == vec!["test".to_string(), "--help".to_string()]);
     }
 
     #[test]
-    fn command_instantiation_argc_one_arg() {
+    fn command_instantiation_argc_field_one_arg() {
         let c = Command::new(vec!["test".to_string()]);
         assert!(c.argc == 1);
     }
 
     #[test]
-    fn command_instantiation_argc_two_args() {
+    fn command_instantiation_argc_field_two_args() {
         let c = Command::new(vec!["test".to_string(), "--help".to_string()]);
         assert!(c.argc == 2);
+    }
+
+    #[test]
+    fn command_instantiation_executable_field() {
+        let c = Command::new(vec!["test".to_string(), "--help".to_string()]);
+        assert!(c.executable == "test".to_string());
     }
 
     #[test]
