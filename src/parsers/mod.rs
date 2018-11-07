@@ -4,9 +4,9 @@ pub fn parse_options(argv: &Vec<String>) -> Vec<String> {
     for arg in argv {
         if arg.starts_with("-") {
             if is_definition_option(&arg[..]) {
-                let definition_option_vec = get_definition_parts(&arg[..]);
-                let definition = &definition_option_vec[0];
-                options.push(definition.to_string());
+                let option_definition_vec = get_definition_parts(&arg[..]);
+                let option = &option_definition_vec[0];
+                options.push(option.to_string());
             } else {
                 let option = &arg[..];
                 options.push(option.to_string());
