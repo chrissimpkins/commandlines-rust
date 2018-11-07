@@ -3,6 +3,8 @@
 
 //! Command line string parsing support
 
+use std::collections::HashMap;
+
 /// Returns `Vec<String>` of command line options in a command line string
 pub fn parse_options(argv: &Vec<String>) -> Vec<String> {
     let mut options: Vec<String> = Vec::new();
@@ -27,6 +29,31 @@ pub fn parse_options(argv: &Vec<String>) -> Vec<String> {
     }
 
     options
+}
+
+/// Returns `std::collections::HashMap<String, String>` with key:value mapped as option:definition
+pub fn parse_definitions(argv: &Vec<String>) -> HashMap<String, String> {
+    let mut definitions: HashMap<String, String> = HashMap::new();
+    for arg in argv {
+        if arg.starts_with("-") {
+            // test to confirm that we haven't encountered a double
+            // hyphen command line option as this indicates that all
+            // subsequent argument parsing for options should be ignored
+            if is_double_hyphen_option(&arg[..]) {
+                break;
+            }
+            // test for a definition formatted option (e.g., `--option=definition`)
+            // parse to option and definition parts if identified
+            if is_definition_option(&arg[..]) {
+                let option_definition_vec = get_definition_parts(&arg[..]);
+                let option = &option_definition_vec[0];
+                let definition = &option_definition_vec[1];
+                definitions.insert(option.to_string(), definition.to_string());
+            }
+        }
+    }
+
+    definitions
 }
 
 /// Returns boolean for the question "Is `needle` a definition option?"
@@ -106,6 +133,52 @@ mod tests {
         let expected_vec: Vec<String> = vec![];
 
         assert!(parse_options(&test_vec) == expected_vec);
+    }
+
+    #[test]
+    fn function_parse_definitions_single_def() {
+        let test_vec = vec![
+            String::from("tester"),
+            String::from("subcommand"),
+            String::from("-o"),
+            String::from("spacedefinition"),
+            String::from("--longoption"),
+            String::from("--defoption=equaldefinition"),
+            String::from("--"),
+            String::from("--output=filepath"), // should not be parsed as option because follows `--`
+            String::from("--afterdoublehyphen"), // should not be parsed as option because follows `--`
+            String::from("-x"), // should not be parsed as option because follows `--`
+            String::from("lastpos"),
+        ];
+
+        let mut expected_hm = HashMap::new();
+        expected_hm.insert("--defoption".to_string(), "equaldefinition".to_string());
+
+        assert_eq!(parse_definitions(&test_vec), expected_hm);
+    }
+
+    #[test]
+    fn function_parse_definitions_multi_def() {
+        let test_vec = vec![
+            String::from("tester"),
+            String::from("subcommand"),
+            String::from("-o"),
+            String::from("spacedefinition"),
+            String::from("--longoption"),
+            String::from("--defoption=equaldefinition"),
+            String::from("--another=anotherdef"),
+            String::from("--"),
+            String::from("--output=filepath"), // should not be parsed as option because follows `--`
+            String::from("--afterdoublehyphen"), // should not be parsed as option because follows `--`
+            String::from("-x"), // should not be parsed as option because follows `--`
+            String::from("lastpos"),
+        ];
+
+        let mut expected_hm = HashMap::new();
+        expected_hm.insert("--defoption".to_string(), "equaldefinition".to_string());
+        expected_hm.insert("--another".to_string(), "anotherdef".to_string());
+
+        assert_eq!(parse_definitions(&test_vec), expected_hm);
     }
 
     #[test]

@@ -7,6 +7,7 @@
 
 pub mod parsers;
 
+use std::collections::HashMap;
 use std::fmt;
 
 /// A command line argument object
@@ -34,6 +35,8 @@ pub struct Command {
     pub executable: String,
     /// Vector of command line options in `Command.argv`
     pub options: Vec<String>,
+    /// HashMap of command line option definitions mapped as key=option:value=definition
+    pub definitions: HashMap<String, String>,
 }
 
 // Traits
@@ -86,12 +89,14 @@ impl Command {
         let executable_definition = &arguments[0];
         let size_definition = arguments.len();
         let vec_options = parsers::parse_options(&arguments);
+        let definitions_hm = parsers::parse_definitions(&arguments);
 
         Command {
             argv: arguments_definition,
             argc: size_definition,
             executable: executable_definition.to_string(),
             options: vec_options,
+            definitions: definitions_hm,
         }
     }
 
@@ -185,6 +190,34 @@ mod tests {
     fn command_instantiation_executable_field() {
         let c = Command::new(vec!["test".to_string(), "--help".to_string()]);
         assert!(c.executable == "test".to_string());
+    }
+
+    #[test]
+    fn command_instantiation_definitions_field_single_def() {
+        let c = Command::new(vec![
+            "test".to_string(),
+            "--something".to_string(),
+            "--option=define".to_string(),
+        ]);
+        let mut expected_hm: HashMap<String, String> = HashMap::new();
+        expected_hm.insert("--option".to_string(), "define".to_string());
+        assert_eq!(c.definitions, expected_hm);
+    }
+
+    #[test]
+    fn command_instantiation_definitions_field_multi_def() {
+        let c = Command::new(vec![
+            "test".to_string(),
+            "--something".to_string(),
+            "--option=define".to_string(),
+            "--another=otherdef".to_string(),
+            "--".to_string(),
+            "--absent=true".to_string(),
+        ]);
+        let mut expected_hm: HashMap<String, String> = HashMap::new();
+        expected_hm.insert("--option".to_string(), "define".to_string());
+        expected_hm.insert("--another".to_string(), "otherdef".to_string());
+        assert_eq!(c.definitions, expected_hm);
     }
 
     #[test]
