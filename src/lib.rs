@@ -2,9 +2,11 @@ mod parsers;
 
 use std::fmt;
 
+#[derive(Debug)]
 pub struct Command {
     pub argv: Vec<String>,
     pub argc: usize,
+    pub options: Vec<String>
 }
 
 // Traits
@@ -21,26 +23,28 @@ impl fmt::Display for Command {
     }
 }
 
-// Debug trait
-impl fmt::Debug for Command {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut commandstring = String::new();
-        for substring in &self.argv {
-            commandstring.push_str(&substring[..]);
-            commandstring.push_str(" ");
-        }
-        write!(f, "Command: '{}'", &commandstring[..].trim_right())
-    }
-}
+// // Debug trait
+// impl fmt::Debug for Command {
+//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+//         let mut commandstring = String::new();
+//         for substring in &self.argv {
+//             commandstring.push_str(&substring[..]);
+//             commandstring.push_str(" ");
+//         }
+//         write!(f, "Command: '{}'", &commandstring[..].trim_right())
+//     }
+// }
 
 // Methods
 impl Command {
     pub fn new(arguments: Vec<String>) -> Self {
         let vec_size = arguments.len();
+        let vec_options = parsers::parse_options(&arguments);
 
         Command {
             argv: arguments,
             argc: vec_size,
+            options: vec_options
         }
     }
 }
