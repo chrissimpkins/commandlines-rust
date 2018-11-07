@@ -117,6 +117,25 @@ impl Command {
         self.argv[1..].len() > 0
     }
 
+    /// Returns a boolean for the question "Does the command include any definition options?"
+    ///
+    /// # Remarks
+    /// A definition option is defined as a command line string that takes a short or long option format with an equal character that is used to indicate that a definition of the option follows.  They may take either of the following formats:
+    /// * `-o=def`
+    /// * `--option=def`
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c = commandlines::Command::new(std::env::args().collect());
+    /// if c.has_definitions() {
+    ///    // definitions were parsed in the command
+    /// }
+    /// ```
+    pub fn has_definitions(&self) -> bool {
+        self.definitions.len() > 0
+    }
+
     /// Returns a boolean for the question "Does the command include any options?"
     ///
     /// # Remarks
@@ -146,6 +165,23 @@ impl Command {
     /// ```
     pub fn contains_arg(&self, needle: &str) -> bool {
         self.argv[1..].contains(&String::from(needle))
+    }
+
+    /// Returns a boolean for the question "Does the command include the definition option `needle`?"
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c = commandlines::Command::new(std::env::args().collect());
+    /// if c.contains_definition("--spam") {
+    ///     // command included a `--spam=[definition]` option
+    /// }
+    /// ```
+    pub fn contains_definition(&self, needle: &str) -> bool {
+        match self.definitions.get(&String::from(needle)) {
+            Some(_) => true,
+            None => false,
+        }
     }
 
     /// Returns a boolean for the question "Does the command include the option string `needle`?" at any index
@@ -236,6 +272,21 @@ mod tests {
     }
 
     #[test]
+    fn command_method_has_definitions_true() {
+        let c = Command::new(vec!["test".to_string(), "--opt=def".to_string()]);
+        assert_eq!(c.has_definitions(), true);
+
+        let c = Command::new(vec!["test".to_string(), "-o=d".to_string()]);
+        assert_eq!(c.has_definitions(), true);
+    }
+
+    #[test]
+    fn command_method_has_definitions_false() {
+        let c = Command::new(vec!["test".to_string()]); // ignores the executable as not an argument
+        assert_eq!(c.has_definitions(), false);
+    }
+
+    #[test]
     fn command_method_has_options_true() {
         let c = Command::new(vec!["test".to_string(), "--help".to_string()]);
         assert!(c.has_options() == true);
@@ -258,6 +309,21 @@ mod tests {
         assert_eq!(c.contains_arg("--help"), true);
         assert_eq!(c.contains_arg("bogus"), false);
         assert_eq!(c.contains_arg("test"), false); // executable not considered argument
+    }
+
+    #[test]
+    fn command_method_contains_definition() {
+        let c = Command::new(vec![
+            "test".to_string(),
+            "subcmd".to_string(),
+            "--help".to_string(),
+            "--option=definition".to_string(),
+            "--another=deftwo".to_string(),
+        ]);
+        assert_eq!(c.contains_definition("--option"), true);
+        assert_eq!(c.contains_definition("--another"), true);
+        assert_eq!(c.contains_definition("--bogus"), false);
+        assert_eq!(c.contains_definition("--help"), false);
     }
 
     #[test]
