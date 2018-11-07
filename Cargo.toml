@@ -1,10 +1,15 @@
 [package]
 name = "commandlines"
-version = "0.0.2"
+version = "0.1.0"
 description = "A command line argument parsing library for Rust"
 authors = ["Chris Simpkins <chris@sourcefoundry.org>"]
 repository = "https://github.com/chrissimpkins/commandlines-rust"
 readme = "README.md"
 license = "MIT"
+keywords = ["cli", "commandline", "application", "parser"]
 
 [dependencies]
+
+[badges]
+appveyor = { repository = "chrissimpkins/commandlines-rust", branch = "master", service = "github" }
+travis-ci = { repository = "chrissimpkins/commandlines-rust", branch = "master" }
