@@ -3,7 +3,7 @@
 
 //! `commandlines` is a simple, functional command line argument parsing library for the development of Rust command line interface (CLI) applications.
 //!
-//! It is currently in development and is not stable for production use.
+//! It is currently in development and the API is not stable.
 
 pub mod parsers;
 
@@ -197,6 +197,25 @@ impl Command {
     pub fn contains_option(&self, needle: &str) -> bool {
         self.options.contains(&String::from(needle))
     }
+
+    /// Returns Option<&String> definition for a key defined by `needle`
+    ///
+    /// Returns None if the option was not used in the command
+    ///
+    /// # Examples
+    ///
+    /// The following example demonstrates how to get the definition string for a command line option with the format `--name=[definition]`:
+    ///
+    /// ```
+    /// let c = commandlines::Command::new(std::env::args().collect());
+    /// match c.get_definition_for("--name") {
+    ///     Some(x) => println!("{}", *x),
+    ///     None => eprintln!("{}", "Missing".to_string())
+    /// };
+    /// ```
+    pub fn get_definition_for(&self, needle: &str) -> Option<&String> {
+        self.definitions.get(&String::from(needle))
+    }
 }
 
 // Tests
@@ -336,6 +355,32 @@ mod tests {
         assert_eq!(c.contains_option("--help"), true);
         assert_eq!(c.contains_option("--bogus"), false);
         assert_eq!(c.contains_option("help"), false); // must include the option indicator in string
+    }
+
+    #[test]
+    fn command_method_get_definition_for_def_present() {
+        let c = Command::new(vec![
+            "test".to_string(),
+            "subcmd".to_string(),
+            "--help".to_string(),
+            "--option=definition".to_string(),
+        ]);
+
+        assert_eq!(
+            c.get_definition_for("--option"),
+            Some(&String::from("definition"))
+        );
+    }
+
+    #[test]
+    fn command_method_get_definition_for_def_absent() {
+        let c = Command::new(vec![
+            "test".to_string(),
+            "subcmd".to_string(),
+            "--help".to_string(),
+        ]);
+
+        assert_eq!(c.get_definition_for("--option"), None);
     }
 
 }
