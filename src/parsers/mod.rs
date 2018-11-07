@@ -18,10 +18,9 @@ pub fn parse_options(argv: &Vec<String>) -> Vec<String> {
 }
 
 pub fn is_definition_option(needle: &str) -> bool {
-    if needle.contains("=") {
-        true
-    } else {
-        false
+    match needle.contains("=") {
+        true => true,
+        false => false
     }
 }
 
