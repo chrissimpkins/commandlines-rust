@@ -8,6 +8,14 @@ pub fn parse_options(argv: &Vec<String>) -> Vec<String> {
     let mut options: Vec<String> = Vec::new();
     for arg in argv {
         if arg.starts_with("-") {
+            // test to confirm that we haven't encountered a double
+            // hyphen command line option as this indicates that all
+            // subsequent argument parsing for options should be ignored
+            if is_double_hyphen_option(&arg[..]) {
+                break;
+            }
+            // test for a definition formatted option (e.g., `--option=definition`)
+            // parse to option and definition parts if identified
             if is_definition_option(&arg[..]) {
                 let option_definition_vec = get_definition_parts(&arg[..]);
                 let option = &option_definition_vec[0];
@@ -43,6 +51,17 @@ pub fn get_definition_parts(needle: &str) -> Vec<String> {
     vec![String::from(opt_def[0]), String::from(opt_def[1])]
 }
 
+/// Returns boolean for the question "Is `needle` a double hyphen option?"
+///
+/// # Remarks
+/// The `--` command line idiom is used to indicate that strings following this indicator should not be parsed as command line options.
+pub fn is_double_hyphen_option(needle: &str) -> bool {
+    match needle == "--" {
+        true => true,
+        false => false,
+    }
+}
+
 // Tests
 #[cfg(test)]
 mod tests {
@@ -57,6 +76,9 @@ mod tests {
             String::from("spacedefinition"),
             String::from("--longoption"),
             String::from("--defoption=equaldefinition"),
+            String::from("--"),
+            String::from("--afterdoublehyphen"), // should not be parsed as option as follows `--`
+            String::from("-x"),                  // should not be parsed as option as follows `--`
             String::from("lastpos"),
         ];
 
@@ -75,6 +97,9 @@ mod tests {
             String::from("tester"),
             String::from("subcommand"),
             String::from("spacedefinition"),
+            String::from("--"),
+            String::from("--afterdoublehyphen"), // should not be parsed as option as follows `--`
+            String::from("-x"),                  // should not be parsed as option as follows `--`
             String::from("lastpos"),
         ];
 
@@ -100,5 +125,21 @@ mod tests {
         let definition_string = "--option=definition";
         let expected: Vec<String> = vec![String::from("--option"), String::from("definition")];
         assert!(get_definition_parts(definition_string) == expected);
+    }
+
+    #[test]
+    fn function_is_double_hyphen_option_true() {
+        let true_definition = "--";
+        assert_eq!(is_double_hyphen_option(true_definition), true);
+    }
+
+    #[test]
+    fn function_is_double_hyphen_option_false() {
+        let false_definition_1 = "--help";
+        let false_definition_2 = "-s";
+        let false_definition_3 = "subcmd";
+        assert_eq!(is_double_hyphen_option(false_definition_1), false);
+        assert_eq!(is_double_hyphen_option(false_definition_2), false);
+        assert_eq!(is_double_hyphen_option(false_definition_3), false);
     }
 }
