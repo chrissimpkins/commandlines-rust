@@ -449,6 +449,13 @@ mod tests {
     }
 
     #[test]
+    fn command_method_get_argument_after_missing_needle_arg() {
+        let c = Command::new(vec!["test".to_string(), "-o".to_string()]);
+
+        assert_eq!(c.get_argument_after("bogus"), None);
+    }
+
+    #[test]
     fn command_method_get_argument_at() {
         let c = Command::new(vec!["test".to_string(), "-o".to_string()]);
 
