@@ -209,7 +209,7 @@ impl Command {
     /// ```
     /// let c = commandlines::Command::new(std::env::args().collect());
     /// match c.get_definition_for("--name") {
-    ///     Some(x) => println!("{}", *x),
+    ///     Some(x) => println!("The definition for --name is {}", *x),
     ///     None => eprintln!("{}", "Missing")
     /// };
     /// ```
