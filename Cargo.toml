@@ -14,3 +14,4 @@ categories = ["command-line-interface"]
 [badges]
 appveyor = { repository = "chrissimpkins/commandlines-rust", branch = "master", service = "github" }
 travis-ci = { repository = "chrissimpkins/commandlines-rust", branch = "master" }
+codecov = { repository = "chrissimpkins/commandlines-rust", branch = "master", service = "github" }
