@@ -109,6 +109,7 @@ impl Command {
     ///
     /// ```
     /// let c = commandlines::Command::new(std::env::args().collect());
+    ///
     /// if !c.has_args() {
     ///    eprintln!("{}", "Missing arguments");
     /// }
@@ -128,6 +129,7 @@ impl Command {
     ///
     /// ```
     /// let c = commandlines::Command::new(std::env::args().collect());
+    ///
     /// if c.has_definitions() {
     ///    // definitions were parsed in the command
     /// }
@@ -145,6 +147,7 @@ impl Command {
     ///
     /// ```
     /// let c = commandlines::Command::new(std::env::args().collect());
+    ///
     /// if c.has_options() {
     ///    // start application-specific option parsing logic
     /// }
@@ -159,6 +162,7 @@ impl Command {
     ///
     /// ```
     /// let c = commandlines::Command::new(std::env::args().collect());
+    ///
     /// if c.contains_arg("spam") {
     ///     // a `spam` argument was in the command
     /// }
@@ -173,6 +177,7 @@ impl Command {
     ///
     /// ```
     /// let c = commandlines::Command::new(std::env::args().collect());
+    ///
     /// if c.contains_definition("--spam") {
     ///     // command included a `--spam=[definition]` option
     /// }
@@ -190,6 +195,7 @@ impl Command {
     ///
     /// ```
     /// let c = commandlines::Command::new(std::env::args().collect());
+    ///
     /// if c.contains_option("--help") {
     ///     // you have a standard request for help documentation
     /// }
@@ -208,6 +214,7 @@ impl Command {
     ///
     /// ```
     /// let c = commandlines::Command::new(std::env::args().collect());
+    ///
     /// match c.get_definition_for("--name") {
     ///     Some(x) => println!("The definition for --name is {}", *x),
     ///     None => eprintln!("{}", "Missing")
@@ -221,12 +228,19 @@ impl Command {
     ///
     /// Returns None if `needle` is the last positional argument in the command
     ///
+    /// # Remarks
+    ///
+    /// This method can be used to obtain space-delimited definition arguments that follow an option (e.g., `-o [filepath]`). See the example below.
+    ///
     /// # Examples
+    ///
+    /// For a command syntax `test -o [filepath]` the following can be used to get the filepath definition after the `-o` option:
     ///
     /// ```
     /// let c = commandlines::Command::new(std::env::args().collect());
+    ///
     /// match c.get_argument_after("-o") {
-    ///     Some(x) => println!("The argument after -o is {}", *x),
+    ///     Some(x) => println!("The filepath definition after -o is {}", *x),
     ///     None => eprintln!("-o is the last positional argument in the command")
     /// }
     /// ```
@@ -240,14 +254,14 @@ impl Command {
         None
     }
 
-    /// Returns `Option<&String>` for argument at index position `needle`
+    /// Returns `Option<&String>` for the argument at index position `needle`
     ///
     /// Returns None if `needle` is outside of the bounds of valid index values
     ///
     /// # Examples
     ///
     /// ```
-    /// // command = "test subcmd --option"
+    /// // example command = "test subcmd --option"
     /// let c = commandlines::Command::new(std::env::args().collect());
     ///
     /// match c.get_argument_at(0) {
@@ -264,18 +278,19 @@ impl Command {
         self.argv.get(needle)
     }
 
-    /// Returns `Option<usize>` for index position of `needle` in the `Command.argv` Vector
+    /// Returns `Option<usize>` for index position of the argument `needle` in the `Command.argv` Vector
     ///
     /// Returns None if `needle` does not match a string in the Vector
     ///
     /// # Examples
     ///
+    /// In the following example, the command is `test -o [filepath]`:
+    ///
     /// ```
     /// let c = commandlines::Command::new(std::env::args().collect());
     ///
-    /// // command is: "test -o filepath"
     /// match c.get_index_of("-o") {
-    ///     Some(x) => println!("The index position of -o is {}", x),
+    ///     Some(x) => println!("The index position of -o is {}", x), // prints 1
     ///     None => eprintln!("The requested argument was not found")
     /// }
     /// ```
