@@ -1,3 +1,6 @@
+doc: fmt
+	cargo doc --open
+
 fmt:
 	cargo fmt --verbose
 
@@ -8,4 +11,4 @@ test: fmt
 	cargo test
 
 
-.PHONY: fmt publish test
+.PHONY: doc fmt publish test
