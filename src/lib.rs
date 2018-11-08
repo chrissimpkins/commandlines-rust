@@ -1,9 +1,9 @@
 // Copyright 2018 Christopher Simpkins
 // Licensed under the MIT license
 
-//! `commandlines` is a simple, functional command line argument parsing library for the development of Rust command line interface (CLI) applications.
+//! `commandlines` is a command line argument parsing library for the development of Rust command line interface (CLI) applications that follow the [POSIX / GNU conventions for command line arguments](https://www.gnu.org/software/libc/manual/html_node/Argument-Syntax.html).
 //!
-//! It is currently in development and the API is not stable.
+//! It is in development and the API is not stable.  Please see the [source repository README.md page](https://github.com/chrissimpkins/commandlines-rust) for updates on the level of library support for the POSIX/GNU command line argument syntax.
 
 pub mod parsers;
 
