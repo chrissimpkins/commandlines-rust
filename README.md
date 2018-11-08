@@ -19,12 +19,12 @@ The project is in development and the library API is not stable.  Please see the
 - Options may be supplied in any order, or appear multiple times. The interpretation is left up to the particular application program
 - Long options consist of `--` followed by a name made of alphanumeric characters and dashes. Option names are typically one to three words long, with hyphens to separate words
 - To specify an argument for a long option, write ‘--name=value’. This syntax enables a long option to accept an argument that is itself optional
+- Certain options require an argument. For example, the ‘-o’ command of the ld command requires an argument—an output file name
 
 
 ### Not Available Yet
 
 - Multiple options may follow a hyphen delimiter in a single token if the options do not take arguments. Thus, `-abc` is equivalent to `-a -b -c`
-- Certain options require an argument. For example, the ‘-o’ command of the ld command requires an argument—an output file name
 - A token consisting of a single hyphen character is interpreted as an ordinary non-option argument. By convention, it is used to specify input from or output to the standard input and output streams.
 
 ### Do Not Plan to Support
