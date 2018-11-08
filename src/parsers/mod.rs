@@ -5,7 +5,7 @@
 
 use std::collections::HashMap;
 
-/// Returns `Vec<String>` of command line options in a command line string
+/// Returns `Vec<String>` of command line option arguments in a command line string
 pub fn parse_options(argv: &Vec<String>) -> Vec<String> {
     let mut options: Vec<String> = Vec::new();
     for arg in argv {
@@ -59,8 +59,8 @@ pub fn parse_definitions(argv: &Vec<String>) -> HashMap<String, String> {
 /// Returns boolean for the question "Is `needle` a definition option?"
 ///
 /// # Remarks
-/// A definition option is defined as a command line element that includes
-/// an equal symbol to define the element (e.g., `--name=SomeGuy`).
+/// A definition option is defined as a command line argument that includes
+/// an equal symbol to define the option argument (e.g., `--name=SomeGuy`).
 pub fn is_definition_option(needle: &str) -> bool {
     match needle.contains("=") {
         true => true,
@@ -71,8 +71,8 @@ pub fn is_definition_option(needle: &str) -> bool {
 /// Returns `Vec<String>` of definition option parts with two index positions
 ///
 /// These index position definitions are:
-/// * index position `0`: definition option String (i.e., before the equal symbol)
-/// * index position `1`: definition option definition String (i.e., after the equal symbol)
+/// * index position `0`: option argument String (i.e., before the equal symbol)
+/// * index position `1`: definition argument String (i.e., after the equal symbol)
 pub fn get_definition_parts(needle: &str) -> Vec<String> {
     let opt_def: Vec<_> = needle.split('=').collect();
     vec![String::from(opt_def[0]), String::from(opt_def[1])]
@@ -81,7 +81,7 @@ pub fn get_definition_parts(needle: &str) -> Vec<String> {
 /// Returns boolean for the question "Is `needle` a double hyphen option?"
 ///
 /// # Remarks
-/// The `--` command line idiom is used to indicate that strings following this indicator should not be parsed as command line options.
+/// The `--` command line idiom is used to indicate that arguments following this indicator should not be parsed as options.
 pub fn is_double_hyphen_option(needle: &str) -> bool {
     match needle == "--" {
         true => true,
