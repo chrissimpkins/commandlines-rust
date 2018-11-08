@@ -10,8 +10,15 @@ pub fn parse_options(argv: &Vec<String>) -> Vec<String> {
     let mut options: Vec<String> = Vec::new();
     for arg in argv {
         if arg.starts_with("-") {
+            // test to confirm that this is not a single hyphen argument
+            // Per POSIX guidelines, the single hyphen is used to represent
+            // stdin/stdout and should not be parsed as an option
+            if arg == "-" {
+                continue;
+            }
             // test to confirm that we haven't encountered a double
-            // hyphen command line option as this indicates that all
+            // hyphen command line argument
+            // Per POSIX guidelines, the double hyphen indicates that all
             // subsequent argument parsing for options should be ignored
             if is_double_hyphen_option(&arg[..]) {
                 break;
@@ -102,6 +109,7 @@ mod tests {
             String::from("-o"),
             String::from("spacedefinition"),
             String::from("--longoption"),
+            String::from("-"), // should not be parsed as `-` not an option
             String::from("--defoption=equaldefinition"),
             String::from("--"),
             String::from("--afterdoublehyphen"), // should not be parsed as option as follows `--`
@@ -123,6 +131,7 @@ mod tests {
         let test_vec = vec![
             String::from("tester"),
             String::from("subcommand"),
+            String::from("-"), // should not be parsed as `-` not an option
             String::from("spacedefinition"),
             String::from("--"),
             String::from("--afterdoublehyphen"), // should not be parsed as option as follows `--`
