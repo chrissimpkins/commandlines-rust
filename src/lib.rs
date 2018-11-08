@@ -16,22 +16,29 @@ use std::fmt;
 ///
 /// # Examples
 /// ## Instantiation
-/// Instantiate a `Command` struct with a `Vec<String>` that is defined with `std::env::args().collect()`:
 ///
-/// ```
+/// ```norun
 /// extern crate commandlines;
 ///
 /// use commandlines::Command;
 ///
-/// let c = Command::new(std::env::args().collect());
+/// def main() {
+///     let c = Command::new();
+/// }
 /// ```
+///
+/// # Remarks
+///
+/// The Vector of command line arguments presented to the executable in `std::env::args().collect()` is used to define the `Command` struct fields.
+///
+/// See the documentation for the `Command` struct methods and fields to learn how to use the parsed data in your command line interface application logic.
 #[derive(Debug)]
 pub struct Command {
     /// Vector of command line strings defined on instantiation
     pub argv: Vec<String>,
     /// number of strings in `Command.argv`
     pub argc: usize,
-    /// executable at index position `0` of `Command.argv`
+    /// The executable path at index position `0` of `Command.argv`
     pub executable: String,
     /// Vector of command line options in `Command.argv`
     pub options: Vec<String>,
@@ -67,24 +74,37 @@ impl fmt::Display for Command {
 
 // Methods
 impl Command {
-    /// Instantiates and returns a new `Command` object
-    ///
-    /// # Arguments
-    ///
-    /// * `arguments` - a `Vec<String>` of command line arguments
+    /// Instantiates and returns a new `Command` struct with the command line argument data in `std::env::args().collect()`
     ///
     /// # Remarks
     ///
-    /// The command line arguments passed to the executable should be defined with `std::env::args().collect()`.
+    /// Instantiate a `Command` struct in the `main()` method of the `main.rs` file of your Rust executable project.
     ///
     /// # Examples
     ///
-    /// ```
+    /// ```norun
     /// extern crate commandlines;
     ///
-    /// let c = commandlines::Command::new(std::env::args().collect());
+    /// use commandlines::Command;
+    ///
+    /// def main() {
+    ///     let c = Command::new();
+    /// }
     /// ```
-    pub fn new(arguments: Vec<String>) -> Self {
+    pub fn new() -> Self {
+        Command::new_with_vec(std::env::args().collect())
+    }
+
+    // Instantiates and returns a new `Command` struct with mocked command line argument data that is passed in the `arguments` argument.
+    //
+    // # Arguments
+    //
+    // - arguments: (`Vec<String>`) - a Vector of ordered String items intended to mock command line arguments
+    //
+    // Used for `Command` struct testing with mock command line argument data and is not part of the public API.
+    // Use `Command::new()` where `std::env::args().collect()` is used to automatically populate the command line
+    // argument data presented to an executable
+    fn new_with_vec(arguments: Vec<String>) -> Self {
         let arguments_definition = arguments.clone();
         let executable_definition = &arguments[0];
         let size_definition = arguments.len();
@@ -100,15 +120,15 @@ impl Command {
         }
     }
 
-    /// Returns a boolean for the question "Does the command include any arguments?"
+    /// Returns a boolean for the question "Does the command include any arguments to the executable?"
     ///
     /// # Remarks
-    /// An argument is defined as a command line string after the executable. The executable at index position `0` in the `Vec<String>` returned by `std::env::args().collect()` is not part of this definition.
+    /// This method defines an argument as a command line string that occurs *after the executable path string located at index position `0`* of `Command.argv`. Please note that the executable path at index position `0` in the `Vec<String>` returned by `std::env::args().collect()` will always be present and is intentionally not part of this definition.
     ///
     /// # Examples
     ///
     /// ```
-    /// let c = commandlines::Command::new(std::env::args().collect());
+    /// let c = commandlines::Command::new();
     ///
     /// if !c.has_args() {
     ///    eprintln!("{}", "Missing arguments");
@@ -121,14 +141,17 @@ impl Command {
     /// Returns a boolean for the question "Does the command include any definition options?"
     ///
     /// # Remarks
-    /// A definition option is defined as a command line string that takes a short or long option format with an equal character that is used to indicate that a definition of the option follows.  They may take either of the following formats:
-    /// * `-o=def`
-    /// * `--option=def`
+    /// A definition option is defined as a command line string that takes a short or long option format with an equal symbol character that is used to indicate that an option definition string follows.  This library supports the following formats:
+    ///
+    /// - `--option=def`
+    /// - `-o=def`
+    ///
+    /// The long format with two hyphens is specified in the GNU command line argument conventions.  The short format with a single hyphen is not specified in the POSIX or GNU guidelines.
     ///
     /// # Examples
     ///
     /// ```
-    /// let c = commandlines::Command::new(std::env::args().collect());
+    /// let c = commandlines::Command::new();
     ///
     /// if c.has_definitions() {
     ///    // definitions were parsed in the command
@@ -141,12 +164,12 @@ impl Command {
     /// Returns a boolean for the question "Does the command include any options?"
     ///
     /// # Remarks
-    /// An option is defined as a command line string that starts with one or two hyphen characters. This definition includes standard long (e.g., `--longoption`) and short (e.g., `-s`) command line options.
+    /// An option is defined as a command line argument that starts with one or two hyphen characters. This definition includes standard long (e.g., `--longoption`) and short (e.g., `-s`) command line options.
     ///
     /// # Examples
     ///
     /// ```
-    /// let c = commandlines::Command::new(std::env::args().collect());
+    /// let c = commandlines::Command::new();
     ///
     /// if c.has_options() {
     ///    // start application-specific option parsing logic
@@ -161,7 +184,7 @@ impl Command {
     /// # Examples
     ///
     /// ```
-    /// let c = commandlines::Command::new(std::env::args().collect());
+    /// let c = commandlines::Command::new();
     ///
     /// if c.contains_arg("spam") {
     ///     // a `spam` argument was in the command
@@ -176,7 +199,7 @@ impl Command {
     /// # Examples
     ///
     /// ```
-    /// let c = commandlines::Command::new(std::env::args().collect());
+    /// let c = commandlines::Command::new();
     ///
     /// if c.contains_definition("--spam") {
     ///     // command included a `--spam=[definition]` option
@@ -194,7 +217,7 @@ impl Command {
     /// # Examples
     ///
     /// ```
-    /// let c = commandlines::Command::new(std::env::args().collect());
+    /// let c = commandlines::Command::new();
     ///
     /// if c.contains_option("--help") {
     ///     // you have a standard request for help documentation
@@ -206,14 +229,14 @@ impl Command {
 
     /// Returns Option<&String> definition for a key defined by `needle`
     ///
-    /// Returns None if the option was not used in the command
+    /// Returns `None` if the option was not used in the command
     ///
     /// # Examples
     ///
     /// The following example demonstrates how to get the definition string for a command line option with the format `--name=[definition]`:
     ///
     /// ```
-    /// let c = commandlines::Command::new(std::env::args().collect());
+    /// let c = commandlines::Command::new();
     ///
     /// match c.get_definition_for("--name") {
     ///     Some(x) => println!("The definition for --name is {}", *x),
@@ -226,18 +249,18 @@ impl Command {
 
     /// Returns `Option<&String>` for argument at index position i+1 for `needle` at index position i
     ///
-    /// Returns None if `needle` is the last positional argument in the command
+    /// Returns `None` if `needle` is the last positional argument in the command
     ///
     /// # Remarks
     ///
-    /// This method can be used to obtain space-delimited definition arguments that follow an option (e.g., `-o [filepath]`). See the example below.
+    /// This method can be used to obtain space-delimited definition arguments that follow an option (e.g., `-o [filepath]`).
     ///
     /// # Examples
     ///
-    /// For a command syntax `test -o [filepath]` the following can be used to get the filepath definition after the `-o` option:
+    /// For a command with the syntax `test -o [filepath]` the following can be used to get the filepath definition after the `-o` option:
     ///
     /// ```
-    /// let c = commandlines::Command::new(std::env::args().collect());
+    /// let c = commandlines::Command::new();
     ///
     /// match c.get_argument_after("-o") {
     ///     Some(x) => println!("The filepath definition after -o is {}", *x),
@@ -256,13 +279,13 @@ impl Command {
 
     /// Returns `Option<&String>` for the argument at index position `needle`
     ///
-    /// Returns None if `needle` is outside of the bounds of valid index values
+    /// Returns `None` if `needle` is outside of the bounds of valid index values
     ///
     /// # Examples
     ///
     /// ```
     /// // example command = "test subcmd --option"
-    /// let c = commandlines::Command::new(std::env::args().collect());
+    /// let c = commandlines::Command::new();
     ///
     /// match c.get_argument_at(0) {
     ///     Some(x) => println!("The executable is {}", *x),
@@ -280,14 +303,14 @@ impl Command {
 
     /// Returns `Option<usize>` for index position of the argument `needle` in the `Command.argv` Vector
     ///
-    /// Returns None if `needle` does not match a string in the Vector
+    /// Returns `None` if `needle` does not match a string in the Vector
     ///
     /// # Examples
     ///
     /// In the following example, the command is `test -o [filepath]`:
     ///
     /// ```
-    /// let c = commandlines::Command::new(std::env::args().collect());
+    /// let c = commandlines::Command::new();
     ///
     /// match c.get_index_of("-o") {
     ///     Some(x) => println!("The index position of -o is {}", x), // prints 1
@@ -305,32 +328,38 @@ mod tests {
     use super::*;
 
     #[test]
+    fn command_instantiation_environment_args_test() {
+        let c = Command::new();
+        assert!(c.argv.len() > 0); // should always be a Vector with length 1 or more
+    }
+
+    #[test]
     fn command_instantiation_argv_field() {
-        let c = Command::new(vec!["test".to_string(), "--help".to_string()]);
+        let c = Command::new_with_vec(vec!["test".to_string(), "--help".to_string()]);
         assert!(c.argv == vec!["test".to_string(), "--help".to_string()]);
     }
 
     #[test]
     fn command_instantiation_argc_field_one_arg() {
-        let c = Command::new(vec!["test".to_string()]);
+        let c = Command::new_with_vec(vec!["test".to_string()]);
         assert!(c.argc == 1);
     }
 
     #[test]
     fn command_instantiation_argc_field_two_args() {
-        let c = Command::new(vec!["test".to_string(), "--help".to_string()]);
+        let c = Command::new_with_vec(vec!["test".to_string(), "--help".to_string()]);
         assert!(c.argc == 2);
     }
 
     #[test]
     fn command_instantiation_executable_field() {
-        let c = Command::new(vec!["test".to_string(), "--help".to_string()]);
+        let c = Command::new_with_vec(vec!["test".to_string(), "--help".to_string()]);
         assert!(c.executable == "test".to_string());
     }
 
     #[test]
     fn command_instantiation_definitions_field_single_def() {
-        let c = Command::new(vec![
+        let c = Command::new_with_vec(vec![
             "test".to_string(),
             "--something".to_string(),
             "--option=define".to_string(),
@@ -342,7 +371,7 @@ mod tests {
 
     #[test]
     fn command_instantiation_definitions_field_multi_def() {
-        let c = Command::new(vec![
+        let c = Command::new_with_vec(vec![
             "test".to_string(),
             "--something".to_string(),
             "--option=define".to_string(),
@@ -358,49 +387,49 @@ mod tests {
 
     #[test]
     fn command_method_has_args_true() {
-        let c = Command::new(vec!["test".to_string(), "--help".to_string()]);
+        let c = Command::new_with_vec(vec!["test".to_string(), "--help".to_string()]);
         assert_eq!(c.has_args(), true);
 
-        let c = Command::new(vec!["test".to_string(), "subcmd".to_string()]);
+        let c = Command::new_with_vec(vec!["test".to_string(), "subcmd".to_string()]);
         assert_eq!(c.has_args(), true);
     }
 
     #[test]
     fn command_method_has_args_false() {
-        let c = Command::new(vec!["test".to_string()]); // ignores the executable as not an argument
+        let c = Command::new_with_vec(vec!["test".to_string()]); // ignores the executable as not an argument
         assert_eq!(c.has_args(), false);
     }
 
     #[test]
     fn command_method_has_definitions_true() {
-        let c = Command::new(vec!["test".to_string(), "--opt=def".to_string()]);
+        let c = Command::new_with_vec(vec!["test".to_string(), "--opt=def".to_string()]);
         assert_eq!(c.has_definitions(), true);
 
-        let c = Command::new(vec!["test".to_string(), "-o=d".to_string()]);
+        let c = Command::new_with_vec(vec!["test".to_string(), "-o=d".to_string()]);
         assert_eq!(c.has_definitions(), true);
     }
 
     #[test]
     fn command_method_has_definitions_false() {
-        let c = Command::new(vec!["test".to_string()]); // ignores the executable as not an argument
+        let c = Command::new_with_vec(vec!["test".to_string()]); // ignores the executable as not an argument
         assert_eq!(c.has_definitions(), false);
     }
 
     #[test]
     fn command_method_has_options_true() {
-        let c = Command::new(vec!["test".to_string(), "--help".to_string()]);
+        let c = Command::new_with_vec(vec!["test".to_string(), "--help".to_string()]);
         assert!(c.has_options() == true);
     }
 
     #[test]
     fn command_method_has_options_false() {
-        let c = Command::new(vec!["test".to_string(), "subcmd".to_string()]);
+        let c = Command::new_with_vec(vec!["test".to_string(), "subcmd".to_string()]);
         assert!(c.has_options() == false);
     }
 
     #[test]
     fn command_method_contains_arg() {
-        let c = Command::new(vec![
+        let c = Command::new_with_vec(vec![
             "test".to_string(),
             "subcmd".to_string(),
             "--help".to_string(),
@@ -413,7 +442,7 @@ mod tests {
 
     #[test]
     fn command_method_contains_definition() {
-        let c = Command::new(vec![
+        let c = Command::new_with_vec(vec![
             "test".to_string(),
             "subcmd".to_string(),
             "--help".to_string(),
@@ -428,7 +457,7 @@ mod tests {
 
     #[test]
     fn command_method_contains_option() {
-        let c = Command::new(vec![
+        let c = Command::new_with_vec(vec![
             "test".to_string(),
             "subcmd".to_string(),
             "--help".to_string(),
@@ -440,7 +469,7 @@ mod tests {
 
     #[test]
     fn command_method_get_definition_for_def_present() {
-        let c = Command::new(vec![
+        let c = Command::new_with_vec(vec![
             "test".to_string(),
             "subcmd".to_string(),
             "--help".to_string(),
@@ -455,7 +484,7 @@ mod tests {
 
     #[test]
     fn command_method_get_definition_for_def_absent() {
-        let c = Command::new(vec![
+        let c = Command::new_with_vec(vec![
             "test".to_string(),
             "subcmd".to_string(),
             "--help".to_string(),
@@ -466,7 +495,7 @@ mod tests {
 
     #[test]
     fn command_method_get_argument_after_arg_present() {
-        let c = Command::new(vec![
+        let c = Command::new_with_vec(vec![
             "test".to_string(),
             "-o".to_string(),
             "path".to_string(),
@@ -477,21 +506,21 @@ mod tests {
 
     #[test]
     fn command_method_get_argument_after_arg_absent() {
-        let c = Command::new(vec!["test".to_string(), "-o".to_string()]);
+        let c = Command::new_with_vec(vec!["test".to_string(), "-o".to_string()]);
 
         assert_eq!(c.get_argument_after("-o"), None);
     }
 
     #[test]
     fn command_method_get_argument_after_missing_needle_arg() {
-        let c = Command::new(vec!["test".to_string(), "-o".to_string()]);
+        let c = Command::new_with_vec(vec!["test".to_string(), "-o".to_string()]);
 
         assert_eq!(c.get_argument_after("bogus"), None);
     }
 
     #[test]
     fn command_method_get_argument_at() {
-        let c = Command::new(vec!["test".to_string(), "-o".to_string()]);
+        let c = Command::new_with_vec(vec!["test".to_string(), "-o".to_string()]);
 
         assert_eq!(c.get_argument_at(0), Some(&String::from("test"))); // zero indexed request
         assert_eq!(c.get_argument_at(1), Some(&String::from("-o"))); // valid index
@@ -500,11 +529,10 @@ mod tests {
 
     #[test]
     fn command_method_get_index_of() {
-        let c = Command::new(vec!["test".to_string(), "-o".to_string()]);
+        let c = Command::new_with_vec(vec!["test".to_string(), "-o".to_string()]);
 
         assert_eq!(c.get_index_of("test"), Some(0));
         assert_eq!(c.get_index_of("-o"), Some(1));
         assert_eq!(c.get_index_of("missing"), None);
     }
-
 }
