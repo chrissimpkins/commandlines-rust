@@ -239,6 +239,30 @@ impl Command {
 
         None
     }
+
+    /// Returns `Option<&String>` for argument at index position `needle`
+    ///
+    /// Returns None if `needle` is outside of the bounds of valid index values
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// // command = "test subcmd --option"
+    /// let c = commandlines::Command::new(std::env::args().collect());
+    ///
+    /// match c.get_argument_at(0) {
+    ///     Some(x) => println!("The executable is {}", *x),
+    ///     None => eprintln!("Error.")
+    /// }
+    ///
+    /// match c.get_argument_at(1) {
+    ///     Some(x) => println!("The first positional argument is {}", *x),
+    ///     None => eprintln!("There is no first positional argument")
+    /// }
+    /// ```
+    pub fn get_argument_at(&self, needle: usize) -> Option<&String> {
+        self.argv.get(needle)
+    }
 }
 
 // Tests
@@ -422,6 +446,15 @@ mod tests {
         let c = Command::new(vec!["test".to_string(), "-o".to_string()]);
 
         assert_eq!(c.get_argument_after("-o"), None);
+    }
+
+    #[test]
+    fn command_method_get_argument_at() {
+        let c = Command::new(vec!["test".to_string(), "-o".to_string()]);
+
+        assert_eq!(c.get_argument_at(0), Some(&String::from("test"))); // zero indexed request
+        assert_eq!(c.get_argument_at(1), Some(&String::from("-o"))); // valid index
+        assert_eq!(c.get_argument_at(10), None); // invalid index
     }
 
 }
