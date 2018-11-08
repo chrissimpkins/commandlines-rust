@@ -6,7 +6,7 @@ authors = ["Chris Simpkins <chris@sourcefoundry.org>"]
 repository = "https://github.com/chrissimpkins/commandlines-rust"
 readme = "README.md"
 license = "MIT"
-keywords = ["cli", "commandline", "application", "parser"]
+keywords = ["cli", "commandline", "application", "posix", "gnu"]
 
 [dependencies]
 
