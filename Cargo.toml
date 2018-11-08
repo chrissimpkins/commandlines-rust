@@ -7,7 +7,7 @@ repository = "https://github.com/chrissimpkins/commandlines-rust"
 readme = "README.md"
 license = "MIT"
 keywords = ["cli", "commandline", "application", "posix", "gnu"]
-categories=["command-line-interface"]
+categories = ["command-line-interface"]
 
 [dependencies]
 
