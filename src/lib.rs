@@ -216,6 +216,29 @@ impl Command {
     pub fn get_definition_for(&self, needle: &str) -> Option<&String> {
         self.definitions.get(&String::from(needle))
     }
+
+    /// Returns `Option<&String>` for argument at index position i+1 for `needle` at index position i
+    ///
+    /// Returns None if `needle` is the last positional argument in the command
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c = commandlines::Command::new(std::env::args().collect());
+    /// match c.get_argument_after("-o") {
+    ///     Some(x) => println!("The argument after -o is {}", *x),
+    ///     None => eprintln!("-o is the last positional argument in the command")
+    /// }
+    /// ```
+    pub fn get_argument_after(&self, needle: &str) -> Option<&String> {
+        for (index, value) in self.argv.iter().enumerate() {
+            if value == needle {
+                return self.argv.get(index + 1);
+            }
+        }
+
+        None
+    }
 }
 
 // Tests
@@ -381,6 +404,24 @@ mod tests {
         ]);
 
         assert_eq!(c.get_definition_for("--option"), None);
+    }
+
+    #[test]
+    fn command_method_get_argument_after_arg_present() {
+        let c = Command::new(vec![
+            "test".to_string(),
+            "-o".to_string(),
+            "path".to_string(),
+        ]);
+
+        assert_eq!(c.get_argument_after("-o"), Some(&String::from("path")));
+    }
+
+    #[test]
+    fn command_method_get_argument_after_arg_absent() {
+        let c = Command::new(vec!["test".to_string(), "-o".to_string()]);
+
+        assert_eq!(c.get_argument_after("-o"), None);
     }
 
 }
