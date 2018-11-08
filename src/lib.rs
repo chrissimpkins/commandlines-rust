@@ -110,7 +110,7 @@ impl Command {
     /// ```
     /// let c = commandlines::Command::new(std::env::args().collect());
     /// if !c.has_args() {
-    ///    eprintln!("{}", String::from("Missing arguments"));
+    ///    eprintln!("{}", "Missing arguments");
     /// }
     /// ```
     pub fn has_args(&self) -> bool {
@@ -160,7 +160,7 @@ impl Command {
     /// ```
     /// let c = commandlines::Command::new(std::env::args().collect());
     /// if c.contains_arg("spam") {
-    ///     // you received spam somewhere in the command
+    ///     // a `spam` argument was in the command
     /// }
     /// ```
     pub fn contains_arg(&self, needle: &str) -> bool {
@@ -210,7 +210,7 @@ impl Command {
     /// let c = commandlines::Command::new(std::env::args().collect());
     /// match c.get_definition_for("--name") {
     ///     Some(x) => println!("{}", *x),
-    ///     None => eprintln!("{}", "Missing".to_string())
+    ///     None => eprintln!("{}", "Missing")
     /// };
     /// ```
     pub fn get_definition_for(&self, needle: &str) -> Option<&String> {
