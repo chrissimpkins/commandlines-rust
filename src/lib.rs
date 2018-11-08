@@ -263,6 +263,25 @@ impl Command {
     pub fn get_argument_at(&self, needle: usize) -> Option<&String> {
         self.argv.get(needle)
     }
+
+    /// Returns `Option<usize>` for index position of `needle` in the `Command.argv` Vector
+    ///
+    /// Returns None if `needle` does not match a string in the Vector
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c = commandlines::Command::new(std::env::args().collect());
+    ///
+    /// // command is: "test -o filepath"
+    /// match c.get_index_of("-o") {
+    ///     Some(x) => println!("The index position of -o is {}", x),
+    ///     None => eprintln!("The requested argument was not found")
+    /// }
+    /// ```
+    pub fn get_index_of(&self, needle: &str) -> Option<usize> {
+        self.argv.iter().position(|x| x.to_string() == needle)
+    }
 }
 
 // Tests
@@ -462,6 +481,15 @@ mod tests {
         assert_eq!(c.get_argument_at(0), Some(&String::from("test"))); // zero indexed request
         assert_eq!(c.get_argument_at(1), Some(&String::from("-o"))); // valid index
         assert_eq!(c.get_argument_at(10), None); // invalid index
+    }
+
+    #[test]
+    fn command_method_get_index_of() {
+        let c = Command::new(vec!["test".to_string(), "-o".to_string()]);
+
+        assert_eq!(c.get_index_of("test"), Some(0));
+        assert_eq!(c.get_index_of("-o"), Some(1));
+        assert_eq!(c.get_index_of("missing"), None);
     }
 
 }
