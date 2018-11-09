@@ -15,6 +15,7 @@ use std::fmt;
 /// The `Command` struct defines fields that hold parsed command line argument data and provides methods that can be used to define the logic of a command line interface application.
 ///
 /// # Examples
+///
 /// ## Instantiation
 ///
 /// ```norun
@@ -25,6 +26,16 @@ use std::fmt;
 /// def main() {
 ///     let c = Command::new();
 /// }
+/// ```
+///
+/// ## Debugging
+///
+/// The `Command` struct supports pretty-printed display of all parsed data fields to the standard output stream with the `{:#?}` formatting idiom:
+///
+/// ```
+/// use commandlines::Command;
+///
+/// println!("{:#?}", Command::new());
 /// ```
 ///
 /// # Remarks
