@@ -266,6 +266,17 @@ impl Command {
         true
     }
 
+    /// Returns a boolean for the question "Does the command include any of the option strings in the `needle_vec` Vector?"
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c = commandlines::Command::new();
+    ///
+    /// if c.contains_any_option(vec!["-h", "--help"]) {
+    ///     // received a help request with `-h` || `--help` testing condition
+    /// }
+    /// ```
     pub fn contains_any_option(&self, needle_vec: Vec<&str>) -> bool {
         for needle in needle_vec {
             if self.options.contains(&needle.to_string()) {
