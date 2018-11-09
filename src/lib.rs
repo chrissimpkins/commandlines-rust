@@ -142,7 +142,7 @@ impl Command {
     /// let c = commandlines::Command::new();
     ///
     /// if !c.has_args() {
-    ///    eprintln!("{}", "Missing arguments");
+    ///    eprintln!("Missing arguments");
     /// }
     /// ```
     pub fn has_args(&self) -> bool {
@@ -251,7 +251,7 @@ impl Command {
     ///
     /// match c.get_definition_for("--name") {
     ///     Some(x) => println!("The definition for --name is {}", *x),
-    ///     None => eprintln!("{}", "Missing")
+    ///     None => eprintln!("Missing")
     /// };
     /// ```
     pub fn get_definition_for(&self, needle: &str) -> Option<&String> {
@@ -300,7 +300,7 @@ impl Command {
     ///
     /// match c.get_argument_at(0) {
     ///     Some(x) => println!("The executable is {}", *x),
-    ///     None => eprintln!("Error.")
+    ///     None => eprintln!("Error")
     /// }
     ///
     /// match c.get_argument_at(1) {
