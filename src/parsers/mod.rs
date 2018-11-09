@@ -5,7 +5,7 @@
 
 use std::collections::HashMap;
 
-/// Returns `Vec<String>` of command line option arguments in a command line string
+/// Returns `Vec<String>` of command line option arguments in a command line string.
 pub fn parse_options(argv: &Vec<String>) -> Vec<String> {
     let mut options: Vec<String> = Vec::new();
     for arg in argv {
@@ -38,7 +38,7 @@ pub fn parse_options(argv: &Vec<String>) -> Vec<String> {
     options
 }
 
-/// Returns `std::collections::HashMap<String, String>` with key:value mapped as option:definition
+/// Returns `std::collections::HashMap<String, String>` with key:value mapped as option:definition.
 pub fn parse_definitions(argv: &Vec<String>) -> HashMap<String, String> {
     let mut definitions: HashMap<String, String> = HashMap::new();
     for arg in argv {
@@ -63,8 +63,8 @@ pub fn parse_definitions(argv: &Vec<String>) -> HashMap<String, String> {
     definitions
 }
 
-/// Returns `Option<String>` with the first positional argument to the executable
-/// Returns `None` if the command was entered as the executable only
+/// Returns `Option<String>` with the first positional argument to the executable.
+/// Returns `None` if the command was entered as the executable only.
 pub fn parse_first_arg(arg_list: &Vec<String>) -> Option<String> {
     match arg_list.get(1) {
         Some(x) => Some(x.clone()),
@@ -72,8 +72,8 @@ pub fn parse_first_arg(arg_list: &Vec<String>) -> Option<String> {
     }
 }
 
-/// Returns `Option<String>` with the last positional argument to the executable
-/// Returns `None` if the command was entered as the executable only
+/// Returns `Option<String>` with the last positional argument to the executable.
+/// Returns `None` if the command was entered as the executable only.
 pub fn parse_last_arg(arg_list: &Vec<String>) -> Option<String> {
     if arg_list.len() > 1 {
         match arg_list.get(arg_list.len() - 1) {
@@ -85,7 +85,7 @@ pub fn parse_last_arg(arg_list: &Vec<String>) -> Option<String> {
     }
 }
 
-/// Returns boolean for the question "Is `needle` a definition option?"
+/// Returns boolean for the question "Is `needle` a definition option?".
 ///
 /// # Remarks
 /// A definition option is defined as a command line argument that includes
@@ -97,7 +97,7 @@ pub fn is_definition_option(needle: &str) -> bool {
     }
 }
 
-/// Returns `Vec<String>` of definition option parts with two index positions
+/// Returns `Vec<String>` of definition option parts with two index positions.
 ///
 /// These index position definitions are:
 /// * index position `0`: option argument String (i.e., before the equal symbol)
@@ -107,7 +107,7 @@ pub fn get_definition_parts(needle: &str) -> Vec<String> {
     vec![String::from(opt_def[0]), String::from(opt_def[1])]
 }
 
-/// Returns boolean for the question "Is `needle` a double hyphen option?"
+/// Returns boolean for the question "Is `needle` a double hyphen option?".
 ///
 /// # Remarks
 /// The `--` command line idiom is used to indicate that arguments following this indicator should not be parsed as options.

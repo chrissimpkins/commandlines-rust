@@ -55,9 +55,9 @@ pub struct Command {
     pub options: Vec<String>,
     /// HashMap of command line option definitions mapped as key=option:value=definition
     pub definitions: HashMap<String, String>,
-    /// `Option<String>` of first positional argument to the executable. None if there are no arguments to the executable.
+    /// `Option<String>` of first positional argument to the executable. `None` if there are no arguments to the executable.
     pub first_arg: Option<String>,
-    /// `Option<String>` of last positional argument to the executable. None if there are no arguments to the executable.
+    /// `Option<String>` of last positional argument to the executable. `None` if there are no arguments to the executable.
     pub last_arg: Option<String>,
 }
 
@@ -274,7 +274,7 @@ impl Command {
     /// let c = commandlines::Command::new();
     ///
     /// if c.contains_any_option(vec!["-h", "--help"]) {
-    ///     // received a help request with `-h` || `--help` testing condition
+    ///     // received a help request with `-h` || `--help` condition
     /// }
     /// ```
     pub fn contains_any_option(&self, needle_vec: Vec<&str>) -> bool {
@@ -306,7 +306,7 @@ impl Command {
         self.definitions.get(&String::from(needle))
     }
 
-    /// Returns `Option<&String>` for argument at index position i+1 for `needle` at index position i
+    /// Returns `Option<&String>` for argument at index position `i+1` for `needle` at index position `i`
     ///
     /// Returns `None` if `needle` is the last positional argument in the command
     ///
