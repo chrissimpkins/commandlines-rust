@@ -266,6 +266,15 @@ impl Command {
         true
     }
 
+    pub fn contains_any_option(&self, needle_vec: Vec<&str>) -> bool {
+        for needle in needle_vec {
+            if self.options.contains(&needle.to_string()) {
+                return true;
+            }
+        }
+        false
+    }
+
     /// Returns Option<&String> definition for a key defined by `needle`
     ///
     /// Returns `None` if the option was not used in the command
@@ -550,6 +559,24 @@ mod tests {
         assert_eq!(c.contains_all_options(vec!["--help", "--bogus"]), false);
         assert_eq!(c.contains_all_options(vec!["--bogus"]), false);
         assert_eq!(c.contains_all_options(vec!["subcmd"]), false); // not an option, should not be included in test
+    }
+
+    #[test]
+    fn command_method_contains_any_option() {
+        let c1 = Command::new_with_vec(vec![
+            "test".to_string(),
+            "subcmd".to_string(),
+            "--help".to_string(),
+        ]);
+        let c2 = Command::new_with_vec(vec![
+            "test".to_string(),
+            "subcmd".to_string(),
+            "-h".to_string(),
+        ]);
+        assert_eq!(c1.contains_any_option(vec!["--help", "-h"]), true);
+        assert_eq!(c2.contains_any_option(vec!["--help", "-h"]), true);
+        assert_eq!(c1.contains_any_option(vec!["--bogus", "-t"]), false);
+        assert_eq!(c1.contains_any_option(vec!["subcmd", "bogus"]), false);
     }
 
     #[test]
