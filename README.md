@@ -2,8 +2,6 @@
 
 [![Build Status](https://travis-ci.org/chrissimpkins/commandlines-rust.svg?branch=master)](https://travis-ci.org/chrissimpkins/commandlines-rust) [![Build status](https://ci.appveyor.com/api/projects/status/1i4h0gsq82p4jmm9/branch/master?svg=true)](https://ci.appveyor.com/project/chrissimpkins/commandlines-rust/branch/master) [![codecov](https://codecov.io/gh/chrissimpkins/commandlines-rust/branch/master/graph/badge.svg)](https://codecov.io/gh/chrissimpkins/commandlines-rust)
 
-
-
 ## About
 
 `commandlines` is a command line argument parsing library for Rust command line interface application development.  The goal is to support most [POSIX/GNU program argument syntax conventions](https://www.gnu.org/software/libc/manual/html_node/Argument-Syntax.html).
@@ -24,8 +22,7 @@ The project is in development and the library API is not stable.  Please see the
 - Certain options require an argument. For example, the ‘-o’ command of the ld command requires an argument—an output file name
 - A token consisting of a single hyphen character is interpreted as an ordinary non-option argument. By convention, it is used to specify input from or output to the standard input and output streams.
 
-
 ### Not Available Yet
 
 - Multiple options may follow a hyphen delimiter in a single token if the options do not take arguments. Thus, `-abc` is equivalent to `-a -b -c`
-- An option and its argument may or may not appear as separate tokens. (In other words, the whitespace separating them is optional.) Thus, ‘-o foo’ and ‘-ofoo’ are equivalent. 
+- An option and its argument may or may not appear as separate tokens. (In other words, the whitespace separating them is optional.) Thus, ‘-o foo’ and ‘-ofoo’ are equivalent.
