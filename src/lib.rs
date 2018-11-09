@@ -246,6 +246,26 @@ impl Command {
         self.options.contains(&String::from(needle))
     }
 
+    /// Returns a boolean for the question "Does the command include all of the option strings in `needle_vec` Vector?"
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c = commandlines::Command::new();
+    ///
+    /// if c.contains_all_options(vec!["--some", "--things"]) {
+    ///     // implement whatever requires `some` && `things` condition
+    /// }
+    /// ```
+    pub fn contains_all_options(&self, needle_vec: Vec<&str>) -> bool {
+        for needle in needle_vec {
+            if !self.options.contains(&needle.to_string()) {
+                return false;
+            }
+        }
+        true
+    }
+
     /// Returns Option<&String> definition for a key defined by `needle`
     ///
     /// Returns `None` if the option was not used in the command
@@ -516,6 +536,20 @@ mod tests {
         assert_eq!(c.contains_option("--help"), true);
         assert_eq!(c.contains_option("--bogus"), false);
         assert_eq!(c.contains_option("help"), false); // must include the option indicator in string
+    }
+
+    #[test]
+    fn command_method_contains_all_options() {
+        let c = Command::new_with_vec(vec![
+            "test".to_string(),
+            "subcmd".to_string(),
+            "--help".to_string(),
+            "--more".to_string(),
+        ]);
+        assert_eq!(c.contains_all_options(vec!["--more", "--help"]), true);
+        assert_eq!(c.contains_all_options(vec!["--help", "--bogus"]), false);
+        assert_eq!(c.contains_all_options(vec!["--bogus"]), false);
+        assert_eq!(c.contains_all_options(vec!["subcmd"]), false); // not an option, should not be included in test
     }
 
     #[test]
