@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.4.0
+
+- added `Command::contains_all_options()` method for `AND` logic multi-option testing
+- added `Command::contains_any_option()` method for `OR` logic multi-option testing
+- added `Command.first_arg` field with first positional argument definition
+- added `Command.last_arg` field with last positional argument definition
+- added `parsers::parse_first_arg()` function
+- added `parsers::parse_last_arg()` function
+
 ## v0.3.0
 
 - BACKWARDS INCOMPATIBLE: refactored `Command::new()` to use environment variables available in Rust `std::env::args()` on instantiation and removed the `Vec<String>` argument in this method.  This is the ideal approach for users, but eliminates the ability to test with mocked command line argument data
