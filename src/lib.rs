@@ -55,6 +55,10 @@ pub struct Command {
     pub options: Vec<String>,
     /// HashMap of command line option definitions mapped as key=option:value=definition
     pub definitions: HashMap<String, String>,
+    /// `Option<String>` of first positional argument to the executable. None if there are no arguments to the executable.
+    pub first_arg: Option<String>,
+    /// `Option<String>` of last positional argument to the executable. None if there are no arguments to the executable.
+    pub last_arg: Option<String>,
 }
 
 // Traits
@@ -121,6 +125,8 @@ impl Command {
         let size_definition = arguments.len();
         let vec_options = parsers::parse_options(&arguments);
         let definitions_hm = parsers::parse_definitions(&arguments);
+        let first_arg_definition = parsers::parse_first_arg(&arguments);
+        let last_arg_definition = parsers::parse_last_arg(&arguments);
 
         Command {
             argv: arguments_definition,
@@ -128,6 +134,8 @@ impl Command {
             executable: executable_definition.to_string(),
             options: vec_options,
             definitions: definitions_hm,
+            first_arg: first_arg_definition,
+            last_arg: last_arg_definition,
         }
     }
 
@@ -394,6 +402,38 @@ mod tests {
         expected_hm.insert("--option".to_string(), "define".to_string());
         expected_hm.insert("--another".to_string(), "otherdef".to_string());
         assert_eq!(c.definitions, expected_hm);
+    }
+
+    #[test]
+    fn command_instantiation_first_arg_field() {
+        let c = Command::new_with_vec(vec![
+            "test".to_string(),
+            "--help".to_string(),
+            "arg".to_string(),
+        ]);
+        assert_eq!(c.first_arg, Some(String::from("--help")));
+    }
+
+    #[test]
+    fn command_instantiation_first_arg_field_executable_only() {
+        let c = Command::new_with_vec(vec!["test".to_string()]);
+        assert_eq!(c.first_arg, None);
+    }
+
+    #[test]
+    fn command_instantiation_last_arg_field() {
+        let c = Command::new_with_vec(vec![
+            "test".to_string(),
+            "--help".to_string(),
+            "arg".to_string(),
+        ]);
+        assert_eq!(c.last_arg, Some(String::from("arg")));
+    }
+
+    #[test]
+    fn command_instantiation_last_arg_field_executable_only() {
+        let c = Command::new_with_vec(vec!["test".to_string()]);
+        assert_eq!(c.last_arg, None);
     }
 
     #[test]
