@@ -63,6 +63,28 @@ pub fn parse_definitions(argv: &Vec<String>) -> HashMap<String, String> {
     definitions
 }
 
+/// Returns `Option<String>` with the first positional argument to the executable
+/// Returns `None` if the command was entered as the executable only
+pub fn parse_first_arg(arg_list: &Vec<String>) -> Option<String> {
+    match arg_list.get(1) {
+        Some(x) => Some(x.clone()),
+        None => None,
+    }
+}
+
+/// Returns `Option<String>` with the last positional argument to the executable
+/// Returns `None` if the command was entered as the executable only
+pub fn parse_last_arg(arg_list: &Vec<String>) -> Option<String> {
+    if arg_list.len() > 1 {
+        match arg_list.get(arg_list.len() - 1) {
+            Some(x) => Some(x.clone()),
+            None => None,
+        }
+    } else {
+        None // return None if this is an executable only (e.g. only includes index position 0 with length = 1) command
+    }
+}
+
 /// Returns boolean for the question "Is `needle` a definition option?"
 ///
 /// # Remarks
@@ -188,6 +210,38 @@ mod tests {
         expected_hm.insert("--another".to_string(), "anotherdef".to_string());
 
         assert_eq!(parse_definitions(&test_vec), expected_hm);
+    }
+
+    #[test]
+    fn function_parse_first_arg() {
+        let test_vec = vec![
+            String::from("test"),
+            String::from("subcmd"),
+            String::from("arg"),
+        ];
+        assert_eq!(parse_first_arg(&test_vec), Some(String::from("subcmd")));
+    }
+
+    #[test]
+    fn function_parse_first_arg_executable_only() {
+        let test_vec = vec![String::from("test")];
+        assert_eq!(parse_first_arg(&test_vec), None);
+    }
+
+    #[test]
+    fn function_parse_last_arg() {
+        let test_vec = vec![
+            String::from("test"),
+            String::from("subcmd"),
+            String::from("arg"),
+        ];
+        assert_eq!(parse_last_arg(&test_vec), Some(String::from("arg")));
+    }
+
+    #[test]
+    fn function_parse_last_arg_executable_only() {
+        let test_vec = vec![String::from("test")];
+        assert_eq!(parse_last_arg(&test_vec), None);
     }
 
     #[test]
