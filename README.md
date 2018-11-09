@@ -1,6 +1,6 @@
 # commandlines for Rust
 
-[![Build Status](https://travis-ci.org/chrissimpkins/commandlines-rust.svg?branch=master)](https://travis-ci.org/chrissimpkins/commandlines-rust) [![Build status](https://ci.appveyor.com/api/projects/status/1i4h0gsq82p4jmm9/branch/master?svg=true)](https://ci.appveyor.com/project/chrissimpkins/commandlines-rust/branch/master) [![codecov](https://codecov.io/gh/chrissimpkins/commandlines-rust/branch/master/graph/badge.svg)](https://codecov.io/gh/chrissimpkins/commandlines-rust) [![Crates.io](https://img.shields.io/crates/l/commandlines.svg)](https://github.com/chrissimpkins/commandlines-rust/blob/master/LICENSE)
+[![Crates.io](https://img.shields.io/crates/v/commandlines.svg)](https://docs.rs/crate/commandlines) [![Build Status](https://travis-ci.org/chrissimpkins/commandlines-rust.svg?branch=master)](https://travis-ci.org/chrissimpkins/commandlines-rust) [![Build status](https://ci.appveyor.com/api/projects/status/1i4h0gsq82p4jmm9/branch/master?svg=true)](https://ci.appveyor.com/project/chrissimpkins/commandlines-rust/branch/master) [![codecov](https://codecov.io/gh/chrissimpkins/commandlines-rust/branch/master/graph/badge.svg)](https://codecov.io/gh/chrissimpkins/commandlines-rust) [![MIT License](https://img.shields.io/crates/l/commandlines.svg)](https://github.com/chrissimpkins/commandlines-rust/blob/master/LICENSE)
 
 ## About
 
