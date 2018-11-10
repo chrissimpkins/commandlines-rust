@@ -85,6 +85,23 @@ pub fn parse_last_arg(arg_list: &Vec<String>) -> Option<String> {
     }
 }
 
+/// Returns `Options<Vec<String>>` with Vector of arguments following a double dash `--` command line argument idiom.
+/// Returns None if there was no double dash idiom present or there are no arguments following the double dash argument.
+pub fn parse_double_dash_args(arg_list: &Vec<String>) -> Option<Vec<String>> {
+    for (index, value) in arg_list.iter().enumerate() {
+        if is_double_hyphen_option(&value[..]) {
+            let sub_vec = arg_list[(index + 1)..arg_list.len()].to_vec();
+            if sub_vec.len() > 0 {
+                return Some(sub_vec);
+            } else {
+                return None;
+            }
+        }
+    }
+
+    None
+}
+
 /// Returns boolean for the question "Is `needle` a definition option?".
 ///
 /// # Remarks
@@ -242,6 +259,41 @@ mod tests {
     fn function_parse_last_arg_executable_only() {
         let test_vec = vec![String::from("test")];
         assert_eq!(parse_last_arg(&test_vec), None);
+    }
+
+    #[test]
+    fn function_parse_double_dash_args() {
+        let test_vec = vec![
+            String::from("test"),
+            String::from("-o"),
+            String::from("path"),
+            String::from("--"),
+            String::from("--this"),
+            String::from("--that"),
+        ];
+        let expected_vec = vec![String::from("--this"), String::from("--that")];
+        assert_eq!(parse_double_dash_args(&test_vec), Some(expected_vec));
+    }
+
+    #[test]
+    fn function_parse_double_dash_args_no_post_args() {
+        let test_vec = vec![
+            String::from("test"),
+            String::from("-o"),
+            String::from("path"),
+            String::from("--"),
+        ];
+        assert_eq!(parse_double_dash_args(&test_vec), None);
+    }
+
+    #[test]
+    fn function_parse_double_dash_args_no_double_dash() {
+        let test_vec = vec![
+            String::from("test"),
+            String::from("-o"),
+            String::from("path"),
+        ];
+        assert_eq!(parse_double_dash_args(&test_vec), None);
     }
 
     #[test]
