@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.1
+
+- fix for incorrectly formatted documentation on the `Command.double_dash_argv` field
+
 ## v0.5.0
 
 - added `Command::double_dash_argv` field that includes an ordered Vector of arguments that follow a double dash `--` command line idiom
