@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.5.0
+
+- added `Command::double_dash_argv` field that includes an ordered Vector of arguments that follow a double dash `--` command line idiom
+- added `parsers::parse_double_dash_args()` function
+- library documentation updates
+
 ## v0.4.0
 
 - added `Command::contains_all_options()` method for `AND` logic multi-option testing
