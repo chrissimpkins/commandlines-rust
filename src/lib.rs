@@ -59,6 +59,8 @@ pub struct Command {
     pub first_arg: Option<String>,
     /// `Option<String>` of last positional argument to the executable. `None` if there are no arguments to the executable.
     pub last_arg: Option<String>,
+    // `Option<Vec<String>>` of arguments that follow a double dash command line idiom.  `None` if there is no double dash present or there are no arguments after the double dash argument.
+    pub double_dash_argv: Option<Vec<String>>,
 }
 
 // Traits
@@ -127,6 +129,7 @@ impl Command {
         let definitions_hm = parsers::parse_definitions(&arguments);
         let first_arg_definition = parsers::parse_first_arg(&arguments);
         let last_arg_definition = parsers::parse_last_arg(&arguments);
+        let double_dash_definition = parsers::parse_double_dash_args(&arguments);
 
         Command {
             argv: arguments_definition,
@@ -136,6 +139,7 @@ impl Command {
             definitions: definitions_hm,
             first_arg: first_arg_definition,
             last_arg: last_arg_definition,
+            double_dash_argv: double_dash_definition,
         }
     }
 
@@ -474,6 +478,44 @@ mod tests {
     fn command_instantiation_last_arg_field_executable_only() {
         let c = Command::new_with_vec(vec!["test".to_string()]);
         assert_eq!(c.last_arg, None);
+    }
+
+    #[test]
+    fn command_instantiation_double_dash_argv() {
+        let c = Command::new_with_vec(vec![
+            "test".to_string(),
+            "--something".to_string(),
+            "--option=define".to_string(),
+            "--another=otherdef".to_string(),
+            "--".to_string(),
+            "--double".to_string(),
+            "lastpos".to_string(),
+        ]);
+        let expected_vec = vec![String::from("--double"), String::from("lastpos")];
+        assert_eq!(c.double_dash_argv, Some(expected_vec));
+    }
+
+    #[test]
+    fn command_instantiation_double_dash_argv_no_args() {
+        let c = Command::new_with_vec(vec![
+            "test".to_string(),
+            "--something".to_string(),
+            "--option=define".to_string(),
+            "--another=otherdef".to_string(),
+            "--".to_string(),
+        ]);
+        assert_eq!(c.double_dash_argv, None);
+    }
+
+    #[test]
+    fn command_instantiation_double_dash_argv_no_double_dash() {
+        let c = Command::new_with_vec(vec![
+            "test".to_string(),
+            "--something".to_string(),
+            "--option=define".to_string(),
+            "--another=otherdef".to_string(),
+        ]);
+        assert_eq!(c.double_dash_argv, None);
     }
 
     #[test]
