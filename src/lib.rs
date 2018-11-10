@@ -77,18 +77,6 @@ impl fmt::Display for Command {
     }
 }
 
-// // Debug trait
-// impl fmt::Debug for Command {
-//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-//         let mut commandstring = String::new();
-//         for substring in &self.argv {
-//             commandstring.push_str(&substring[..]);
-//             commandstring.push_str(" ");
-//         }
-//         write!(f, "Command: '{}'", &commandstring[..].trim_right())
-//     }
-// }
-
 // Methods
 impl Command {
     /// Instantiates and returns a new `Command` struct with the command line argument data in `std::env::args().collect()`
