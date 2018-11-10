@@ -45,7 +45,7 @@ use std::fmt;
 /// See the documentation for the `Command` struct methods and fields to learn how to use the parsed data in your command line interface application logic.
 #[derive(Debug)]
 pub struct Command {
-    /// Vector of command line strings defined on instantiation
+    /// Vector of ordered command line arguments
     pub argv: Vec<String>,
     /// number of strings in `Command.argv`
     pub argc: usize,
@@ -59,7 +59,7 @@ pub struct Command {
     pub first_arg: Option<String>,
     /// `Option<String>` of last positional argument to the executable. `None` if there are no arguments to the executable.
     pub last_arg: Option<String>,
-    // `Option<Vec<String>>` of arguments that follow a double dash command line idiom.  `None` if there is no double dash present or there are no arguments after the double dash argument.
+    // `Option<Vec<String>>` of ordered arguments that follow a double dash command line idiom.  The double dash idiom indicates that no subsequent argument should be parsed as an option. `None` if there a double dash argument is not present or there are no arguments after the double dash argument.
     pub double_dash_argv: Option<Vec<String>>,
 }
 
