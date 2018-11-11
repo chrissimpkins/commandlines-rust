@@ -105,7 +105,7 @@ impl Command {
     // Use `Command::new()` where `std::env::args().collect()` is used to automatically populate the command line
     // argument data presented to an executable
     fn new_with_vec(arguments: Vec<String>) -> Self {
-        let arguments_definition = arguments.clone();
+        let arguments_definition = arguments.to_owned();
         let executable_definition = &arguments[0];
         let size_definition = arguments.len();
         let vec_options = parsers::parse_options(&arguments);
@@ -141,7 +141,7 @@ impl Command {
     /// }
     /// ```
     pub fn has_args(&self) -> bool {
-        self.argv[1..].len() > 0
+        !self.argv[1..].is_empty()
     }
 
     /// Returns a boolean for the question "Does the command include any definition options?"
@@ -164,7 +164,7 @@ impl Command {
     /// }
     /// ```
     pub fn has_definitions(&self) -> bool {
-        self.definitions.len() > 0
+        !self.definitions.is_empty()
     }
 
     /// Returns a boolean for the question "Does the command include any options?"
@@ -182,7 +182,7 @@ impl Command {
     /// }
     /// ```
     pub fn has_options(&self) -> bool {
-        self.options.len() > 0
+        !self.options.is_empty()
     }
 
     /// Returns a boolean for the question "Does the command include the argument string `needle`?" at any index
@@ -364,7 +364,7 @@ impl Command {
     /// }
     /// ```
     pub fn get_index_of(&self, needle: &str) -> Option<usize> {
-        self.argv.iter().position(|x| x.to_string() == needle)
+        self.argv.iter().position(|x| x == needle)
     }
 }
 
