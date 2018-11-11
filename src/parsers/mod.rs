@@ -6,10 +6,10 @@
 use std::collections::HashMap;
 
 /// Returns `Vec<String>` of command line option arguments in a command line string.
-pub fn parse_options(argv: &Vec<String>) -> Vec<String> {
+pub fn parse_options(argv: &[String]) -> Vec<String> {
     let mut options: Vec<String> = Vec::new();
     for arg in argv {
-        if arg.starts_with("-") {
+        if arg.starts_with('-') {
             // test to confirm that this is not a single hyphen argument
             // Per POSIX guidelines, the single hyphen is used to represent
             // stdin/stdout and should not be parsed as an option
@@ -39,10 +39,10 @@ pub fn parse_options(argv: &Vec<String>) -> Vec<String> {
 }
 
 /// Returns `std::collections::HashMap<String, String>` with key:value mapped as option:definition.
-pub fn parse_definitions(argv: &Vec<String>) -> HashMap<String, String> {
+pub fn parse_definitions(argv: &[String]) -> HashMap<String, String> {
     let mut definitions: HashMap<String, String> = HashMap::new();
     for arg in argv {
-        if arg.starts_with("-") {
+        if arg.starts_with('-') {
             // test to confirm that we haven't encountered a double
             // hyphen command line option as this indicates that all
             // subsequent argument parsing for options should be ignored
@@ -65,7 +65,7 @@ pub fn parse_definitions(argv: &Vec<String>) -> HashMap<String, String> {
 
 /// Returns `Option<String>` with the first positional argument to the executable.
 /// Returns `None` if the command was entered as the executable only.
-pub fn parse_first_arg(arg_list: &Vec<String>) -> Option<String> {
+pub fn parse_first_arg(arg_list: &[String]) -> Option<String> {
     match arg_list.get(1) {
         Some(x) => Some(x.clone()),
         None => None,
@@ -74,7 +74,7 @@ pub fn parse_first_arg(arg_list: &Vec<String>) -> Option<String> {
 
 /// Returns `Option<String>` with the last positional argument to the executable.
 /// Returns `None` if the command was entered as the executable only.
-pub fn parse_last_arg(arg_list: &Vec<String>) -> Option<String> {
+pub fn parse_last_arg(arg_list: &[String]) -> Option<String> {
     if arg_list.len() > 1 {
         match arg_list.get(arg_list.len() - 1) {
             Some(x) => Some(x.clone()),
@@ -87,11 +87,11 @@ pub fn parse_last_arg(arg_list: &Vec<String>) -> Option<String> {
 
 /// Returns `Options<Vec<String>>` with Vector of arguments following a double dash `--` command line argument idiom.
 /// Returns None if there was no double dash idiom present or there are no arguments following the double dash argument.
-pub fn parse_double_dash_args(arg_list: &Vec<String>) -> Option<Vec<String>> {
+pub fn parse_double_dash_args(arg_list: &[String]) -> Option<Vec<String>> {
     for (index, value) in arg_list.iter().enumerate() {
         if is_double_hyphen_option(&value[..]) {
             let sub_vec = arg_list[(index + 1)..arg_list.len()].to_vec();
-            if sub_vec.len() > 0 {
+            if !sub_vec.is_empty() {
                 return Some(sub_vec);
             } else {
                 return None;
@@ -108,10 +108,7 @@ pub fn parse_double_dash_args(arg_list: &Vec<String>) -> Option<Vec<String>> {
 /// A definition option is defined as a command line argument that includes
 /// an equal symbol to define the option argument (e.g., `--name=SomeGuy`).
 pub fn is_definition_option(needle: &str) -> bool {
-    match needle.contains("=") {
-        true => true,
-        false => false,
-    }
+    needle.contains('=')
 }
 
 /// Returns `Vec<String>` of definition option parts with two index positions.
@@ -129,10 +126,7 @@ pub fn get_definition_parts(needle: &str) -> Vec<String> {
 /// # Remarks
 /// The `--` command line idiom is used to indicate that arguments following this indicator should not be parsed as options.
 pub fn is_double_hyphen_option(needle: &str) -> bool {
-    match needle == "--" {
-        true => true,
-        false => false,
-    }
+    needle == "--"
 }
 
 // Tests
