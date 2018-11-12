@@ -143,6 +143,20 @@ pub fn is_definition_option(needle: &str) -> bool {
     needle.contains('=')
 }
 
+/// Returns boolean for the question "Is `needle` a double hyphen option?".
+///
+/// # Remarks
+/// The `--` command line idiom is used to indicate that arguments following this indicator should not be parsed as options.
+pub fn is_double_hyphen_option(needle: &str) -> bool {
+    needle == "--"
+}
+
+/// Returns boolean for the question "Is `needle` a multi-option short syntax (mops) style option argument?"
+pub fn is_mops_option(needle: &str) -> bool {
+    // must have single dash syntax with more than one option character
+    needle.starts_with('-') && !needle.starts_with("--") && needle.len() > 2
+}
+
 /// Returns `Vec<String>` of definition option parts with two index positions.
 ///
 /// These index position definitions are:
@@ -151,14 +165,6 @@ pub fn is_definition_option(needle: &str) -> bool {
 pub fn get_definition_parts(needle: &str) -> Vec<String> {
     let opt_def: Vec<_> = needle.split('=').collect();
     vec![String::from(opt_def[0]), String::from(opt_def[1])]
-}
-
-/// Returns boolean for the question "Is `needle` a double hyphen option?".
-///
-/// # Remarks
-/// The `--` command line idiom is used to indicate that arguments following this indicator should not be parsed as options.
-pub fn is_double_hyphen_option(needle: &str) -> bool {
-    needle == "--"
 }
 
 // Tests
@@ -385,5 +391,22 @@ mod tests {
         assert_eq!(is_double_hyphen_option(false_definition_1), false);
         assert_eq!(is_double_hyphen_option(false_definition_2), false);
         assert_eq!(is_double_hyphen_option(false_definition_3), false);
+    }
+
+    #[test]
+    fn function_is_mops_option() {
+        let true_definition = "-mpn";
+        let false_definition_1 = "-o";
+        let false_definition_2 = "--output";
+        let false_definition_3 = "command";
+        let false_definition_4 = "--";
+        let false_definition_5 = "-";
+
+        assert_eq!(is_mops_option(true_definition), true);
+        assert_eq!(is_mops_option(false_definition_1), false);
+        assert_eq!(is_mops_option(false_definition_2), false);
+        assert_eq!(is_mops_option(false_definition_3), false);
+        assert_eq!(is_mops_option(false_definition_4), false);
+        assert_eq!(is_mops_option(false_definition_5), false);
     }
 }
