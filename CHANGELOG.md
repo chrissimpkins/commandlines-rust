@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.2
+
+- `lib.rs` and `parsers/mod.rs` source refactor
+
 ## v0.5.1
 
 - fix for incorrectly formatted documentation on the `Command.double_dash_argv` field
