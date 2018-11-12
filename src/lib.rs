@@ -102,6 +102,7 @@ impl Command {
     // # Arguments
     //
     // - arguments: (`Vec<String>`) - a Vector of ordered String items
+    #[cfg_attr(feature = "cargo-clippy", allow(needless_pass_by_value))]
     fn new_with_vec(arguments: Vec<String>) -> Self {
         let arguments_definition = arguments.to_owned();
         let executable_definition = &arguments[0];
