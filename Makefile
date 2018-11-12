@@ -5,7 +5,7 @@ fmt:
 	cargo fmt --verbose
 
 lint: fmt
-	cargo clippy
+	cargo clippy --all-targets --all-features
 
 publish:
 	cargo publish
