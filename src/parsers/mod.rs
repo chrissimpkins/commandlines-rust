@@ -293,13 +293,13 @@ mod tests {
     #[test]
     fn function_is_definition_option_true() {
         let true_defintion = "--option=definition";
-        assert!(is_definition_option(true_defintion) == true);
+        assert_eq!(is_definition_option(true_defintion), true);
     }
 
     #[test]
     fn function_is_definition_option_false() {
         let false_definition = "--option";
-        assert!(is_definition_option(false_definition) == false);
+        assert_eq!(is_definition_option(false_definition), false);
     }
 
     #[test]
