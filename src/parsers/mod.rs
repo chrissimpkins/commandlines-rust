@@ -86,7 +86,7 @@ pub fn parse_last_arg(arg_list: &[String]) -> Option<String> {
 }
 
 /// Returns `Options<Vec<String>>` with Vector of arguments following a double dash `--` command line argument idiom.
-/// Returns None if there was no double dash idiom present or there are no arguments following the double dash argument.
+/// Returns `None` if there was no double dash idiom present or there are no arguments following the double dash argument.
 pub fn parse_double_dash_args(arg_list: &[String]) -> Option<Vec<String>> {
     for (index, value) in arg_list.iter().enumerate() {
         if is_double_hyphen_option(&value[..]) {
@@ -100,6 +100,38 @@ pub fn parse_double_dash_args(arg_list: &[String]) -> Option<Vec<String>> {
     }
 
     None
+}
+
+/// Returns `Option<Vec<String>>` that includes unique short options parsed from the command arguments, including any multi-option short syntax options.
+/// Returns `None` if there were no short options in the command
+///
+/// # Remarks
+/// Note that this function is not UTF-8 compliant and enforces a stricter character set definition than other areas of the library. It will not properly parse multi-option short syntax options that include characters outside of the Unicode Basic Latin set.  This function supports the multi-option short syntax argument style defined in the POSIX guidelines (i.e., POSIX option strings should include only characters in the alphanumeric subset of the Unicode Basic Latin set).
+pub fn parse_mops(arg_list: &[String]) -> Option<Vec<String>> {
+    let mut return_vec: Vec<String> = Vec::new();
+
+    // iterate through the option argument list argument
+    for arg in arg_list {
+        if !arg.starts_with("--") {
+            // exclude long option format
+            let t = &arg[..];
+            for x in t.chars() {
+                // iterate through characters in short options
+                if x != '-' {
+                    // assume any character in a short option is a unique option
+                    let option_string = format!("-{}", x); // format as `-[x]` for storage
+                    return_vec.push(option_string);
+                }
+            }
+        }
+    }
+
+    // if there were no short options parsed with this function, return `None`
+    if return_vec.is_empty() {
+        None
+    } else {
+        Some(return_vec)
+    }
 }
 
 /// Returns boolean for the question "Is `needle` a definition option?".
@@ -288,6 +320,36 @@ mod tests {
             String::from("path"),
         ];
         assert_eq!(parse_double_dash_args(&test_vec), None);
+    }
+
+    #[test]
+    fn function_parse_mops() {
+        let test_vec = vec![
+            String::from("--lng"),
+            String::from("-hij"),
+            String::from("-o"),
+        ];
+
+        // should include all short options with multi-option short syntax options parsed to unique individual option items
+        let expected_vec = vec![
+            String::from("-h"),
+            String::from("-i"),
+            String::from("-j"),
+            String::from("-o"),
+        ];
+
+        assert_eq!(parse_mops(&test_vec), Some(expected_vec));
+    }
+
+    #[test]
+    fn function_parse_mops_without_mops() {
+        let test_vec = vec![
+            String::from("--lng"),
+            String::from("--hij"),
+            String::from("--output"),
+        ];
+
+        assert_eq!(parse_mops(&test_vec), None);
     }
 
     #[test]
