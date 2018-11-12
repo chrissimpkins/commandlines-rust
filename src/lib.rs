@@ -5,6 +5,8 @@
 //!
 //! It is in development and the API is not stable.  Please see the [source repository README.md page](https://github.com/chrissimpkins/commandlines-rust) for updates on the level of library support for the POSIX/GNU command line argument syntax.
 
+#![cfg_attr(feature = "cargo-clippy", allow(new_without_default_derive))]
+
 pub mod parsers;
 
 use std::collections::HashMap;
@@ -372,7 +374,7 @@ mod tests {
     #[test]
     fn command_instantiation_environment_args_test() {
         let c = Command::new();
-        assert!(c.argv.len() > 0); // should always be a Vector with length 1 or more
+        assert!(!c.argv.is_empty()); // should always be a Vector with length 1 or more
     }
 
     #[test]
@@ -396,7 +398,7 @@ mod tests {
     #[test]
     fn command_instantiation_executable_field() {
         let c = Command::new_with_vec(vec!["test".to_string(), "--help".to_string()]);
-        assert!(c.executable == "test".to_string());
+        assert!(c.executable == "test");
     }
 
     #[test]
@@ -530,13 +532,13 @@ mod tests {
     #[test]
     fn command_method_has_options_true() {
         let c = Command::new_with_vec(vec!["test".to_string(), "--help".to_string()]);
-        assert!(c.has_options() == true);
+        assert_eq!(c.has_options(), true);
     }
 
     #[test]
     fn command_method_has_options_false() {
         let c = Command::new_with_vec(vec!["test".to_string(), "subcmd".to_string()]);
-        assert!(c.has_options() == false);
+        assert_eq!(c.has_options(), false);
     }
 
     #[test]
