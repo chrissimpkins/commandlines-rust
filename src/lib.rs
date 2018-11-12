@@ -166,6 +166,29 @@ impl Command {
         !self.definitions.is_empty()
     }
 
+    /// Returns a boolean for the question "Does the command include any multi-option short syntax style option arguments?"
+    ///
+    /// # Remarks
+    /// POSIX defines a short option style that uses a single dash delimiter with more than one option indicated by the individual characters defined in the option (e.g., `-hij` means that the command has the options `-h -i -j`).  This method provides support for determining whether a mops style option is present in the command string.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c = commandlines::Command::new();
+    ///
+    /// if c.has_mops() {
+    ///     // at least one multi-option short syntax style argument was parsed in the command
+    /// }
+    /// ```
+    pub fn has_mops(&self) -> bool {
+        for arg in &self.options {
+            if parsers::is_mops_option(&arg[..]) {
+                return true;
+            }
+        }
+        false
+    }
+
     /// Returns a boolean for the question "Does the command include any options?"
     ///
     /// # Remarks
@@ -528,6 +551,30 @@ mod tests {
     fn command_method_has_definitions_false() {
         let c = Command::new_with_vec(vec!["test".to_string()]); // ignores the executable as not an argument
         assert_eq!(c.has_definitions(), false);
+    }
+
+    #[test]
+    fn command_has_mops_true() {
+        let c = Command::new_with_vec(vec![
+            String::from("command"),
+            String::from("-lmn"),
+            String::from("lastpos"),
+        ]);
+        assert_eq!(c.has_mops(), true);
+    }
+
+    #[test]
+    fn command_has_mops_false() {
+        let c = Command::new_with_vec(vec![
+            String::from("command"),
+            String::from("--long"),
+            String::from("-o"),
+            String::from("path"),
+            String::from("lastpos"),
+            String::from("--"),
+            String::from("-"),
+        ]);
+        assert_eq!(c.has_mops(), false);
     }
 
     #[test]
