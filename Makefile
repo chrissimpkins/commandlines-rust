@@ -11,7 +11,7 @@ publish:
 	cargo publish
 
 test: fmt
-	cargo test
+	cargo test --verbose
 
 
 .PHONY: doc fmt lint publish test
