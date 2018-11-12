@@ -99,11 +99,7 @@ impl Command {
     //
     // # Arguments
     //
-    // - arguments: (`Vec<String>`) - a Vector of ordered String items intended to mock command line arguments
-    //
-    // Used for `Command` struct testing with mock command line argument data and is not part of the public API.
-    // Use `Command::new()` where `std::env::args().collect()` is used to automatically populate the command line
-    // argument data presented to an executable
+    // - arguments: (`Vec<String>`) - a Vector of ordered String items
     fn new_with_vec(arguments: Vec<String>) -> Self {
         let arguments_definition = arguments.to_owned();
         let executable_definition = &arguments[0];
