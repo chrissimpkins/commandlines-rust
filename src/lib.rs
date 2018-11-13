@@ -332,6 +332,37 @@ impl Command {
         true
     }
 
+    /// Returns a boolean for the question "Does the command include the option `needle` when the POSIX multi-option short syntax option style is used?"
+    ///
+    /// # Remarks
+    /// The mops style defined by POSIX includes a single dash character followed by one or more alphanumeric characters in the Unicode Basic Latin set.  Each character represents a unique option switch.  For example, "-lmn" is used to indicate "-l -m -n".  This method tests against any short option formatted argument included in the command irrespective of the number of alphanumeric characters that are included.  The method does not test against long options (i.e., those that begin with two dashes).
+    ///
+    /// If you do not use the mops option syntax in your application, use the `Command::contains_any_options()` method instead.
+    ///
+    /// # Examples
+    /// ```
+    /// let c = commandlines::Command::new();
+    ///
+    /// if c.contains_any_mops(vec!["-j", "-k", "-l"]) {
+    ///     // the `j` or `k` or `l` switch was identified in short format options on the command line
+    /// }
+    /// ```
+    pub fn contains_any_mops(&self, needle_vec: Vec<&str>) -> bool {
+        let some_haystack = parsers::parse_mops(&self.options);
+        if some_haystack.is_some() {
+            let haystack = some_haystack.unwrap();
+            for needle in needle_vec {
+                if haystack.contains(&String::from(needle)) {
+                    return true;
+                }
+            }
+        } else {
+            return false; // there were no mops parsed in the command so there is no match
+        }
+
+        false
+    }
+
     /// Returns a boolean for the question "Does the command include any of the option strings in the `needle_vec` Vector?"
     ///
     /// # Examples
@@ -776,6 +807,34 @@ mod tests {
         assert_eq!(c.contains_all_options(vec!["--help", "--bogus"]), false);
         assert_eq!(c.contains_all_options(vec!["--bogus"]), false);
         assert_eq!(c.contains_all_options(vec!["subcmd"]), false); // not an option, should not be included in test
+    }
+
+    #[test]
+    fn command_method_contains_any_mops() {
+        let c = Command::new_with_vec(vec![
+            "test".to_string(),
+            "subcmd".to_string(),
+            "-hij".to_string(),
+            "-l".to_string(),
+            "--option=definition".to_string(),
+            "--another=deftwo".to_string(),
+            "lastpos".to_string(),
+        ]);
+        assert_eq!(c.contains_any_mops(vec!["-z", "-t", "-h"]), true);
+        assert_eq!(c.contains_any_mops(vec!["-z", "-t", "-l"]), true);
+        assert_eq!(c.contains_any_mops(vec!["-z", "-t", "-a"]), false);
+    }
+
+    #[test]
+    fn command_method_contains_any_mops_missing_mops() {
+        let c = Command::new_with_vec(vec![
+            "test".to_string(),
+            "subcmd".to_string(),
+            "--option=definition".to_string(),
+            "--another=deftwo".to_string(),
+            "lastpos".to_string(),
+        ]);
+        assert_eq!(c.contains_any_mops(vec!["-z", "-t", "-h"]), false);
     }
 
     #[test]
