@@ -169,7 +169,7 @@ impl Command {
     /// Returns a boolean for the question "Does the command include any multi-option short syntax style option arguments?"
     ///
     /// # Remarks
-    /// POSIX defines a short option style that uses a single dash delimiter with more than one option indicated by the individual characters defined in the option (e.g., `-hij` means that the command has the options `-h -i -j`).  This method provides support for determining whether a mops style option is present in the command string.
+    /// POSIX defines a short option style that uses a single dash delimiter with more than one option indicated by the individual characters defined in the argument string (e.g., `-hij` means that the command has the options `-h -i -j`).  This method provides support for determining whether a mops style option is present in the command string.
     ///
     /// # Examples
     ///
@@ -193,6 +193,8 @@ impl Command {
     ///
     /// # Remarks
     /// An option is defined as a command line argument that starts with one or two hyphen characters. This definition includes standard long (e.g., `--longoption`) and short (e.g., `-s`) command line options.
+    /// 
+    /// If you use POSIX multi-option short syntax style arguments (e.g., "-lmn" is used to indicate "-l -m -n") in your application, see the `Command::contains_mops()` method.  This method does not test against mops style command line arguments.
     ///
     /// # Examples
     ///
@@ -240,7 +242,34 @@ impl Command {
         }
     }
 
-    /// Returns a boolean for the question "Does the command include the option string `needle`?" at any index
+    /// Returns a boolean for the question "Does the command include the option `needle` when the syntax includes use of the POSIX multi-option short syntax option style?"
+    /// 
+    /// # Remarks
+    /// The mops style defined by POSIX includes a single dash character followed by one or more alphanumeric characters in the Unicode Basic Latin set.  Each character represents a unique option switch.  For example, "-lmn" is used to indicate "-l -m -n".  This method tests against any short option formatted argument included in the command irrespective of the number of alphanumeric characters that are included.  The method does not test against long options (i.e., those that begin with two dashes).
+    /// 
+    /// If you do not use the mops option syntax in your application, use the `Command::contains_option()` method instead.
+    /// 
+    /// # Examples
+    /// 
+    /// ```
+    /// let c = commandlines::Command::new();
+    /// 
+    /// if c.contains_mops("-j") {
+    ///     // the `j` switch was identified in a short format option on the command line
+    /// }
+    /// ```
+    pub fn contains_mops(&self, needle: &str) -> bool {
+        match parsers::parse_mops(&self.options) {
+            Some(haystack) => if haystack.contains(&String::from(needle)) {
+                return true;
+            } else {
+                return false;
+            },
+            None => false,
+        }
+    }
+
+    /// Returns a boolean for the question "Does the command include the option string `needle` at any index?"
     ///
     /// # Examples
     ///
@@ -615,6 +644,44 @@ mod tests {
         assert_eq!(c.contains_definition("--another"), true);
         assert_eq!(c.contains_definition("--bogus"), false);
         assert_eq!(c.contains_definition("--help"), false);
+    }
+
+    #[test]
+    fn command_method_contains_mops_true() {
+        let c = Command::new_with_vec(vec![
+            "test".to_string(),
+            "subcmd".to_string(),
+            "-hij".to_string(),
+            "-l".to_string(),
+            "--option=definition".to_string(),
+            "--another=deftwo".to_string(),
+            "lastpos".to_string(),
+        ]);
+        assert_eq!(c.contains_mops("-h"), true);
+        assert_eq!(c.contains_mops("-i"), true);
+        assert_eq!(c.contains_mops("-j"), true);
+        assert_eq!(c.contains_mops("-l"), true); // should pick up every short option, including those that are not mops formatted
+        assert_eq!(c.contains_mops("-z"), false);
+        assert_eq!(c.contains_mops("-o"), false);
+        assert_eq!(c.contains_mops("-a"), false);
+    }
+
+    #[test]
+    fn command_method_contains_mops_false() {
+        let c = Command::new_with_vec(vec![
+            "test".to_string(),
+            "subcmd".to_string(),
+            "--option=definition".to_string(),
+            "--another=deftwo".to_string(),
+            "lastpos".to_string(),
+            "--".to_string(),
+            "-hij".to_string(),
+        ]);
+        assert_eq!(c.contains_mops("-o"), false);
+        assert_eq!(c.contains_mops("-a"), false);
+        assert_eq!(c.contains_mops("-h"), false);  // should ignore all options after a double dash idiom
+        assert_eq!(c.contains_mops("-i"), false);  // should ignore all options after a double dash idiom
+        assert_eq!(c.contains_mops("-j"), false);  // should ignore all options after a double dash idiom
     }
 
     #[test]
