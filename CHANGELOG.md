@@ -1,5 +1,17 @@
 # Changelog
 
+# v0.6.0
+
+- add support for POSIX multi-option short syntax option command line argument parsing (e.g., `-lmn` = `-l -m -n`)
+- add `Command::has_mops` method
+- add `Command::contains_mops` method
+- add `Command::contains_all_mops` method
+- add `Command::contains_any_mops` method
+- add `parsers::parse_mops` function
+- add `parsers::is_mops` function
+- updated Makefile with verbose testing option in `test` target
+- updated Makefile with new `lint` target
+
 ## v0.5.2
 
 - `lib.rs` and `parsers/mod.rs` source refactor
