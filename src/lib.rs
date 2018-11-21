@@ -45,7 +45,7 @@ use std::fmt;
 /// The Vector of command line arguments presented to the executable in `std::env::args().collect()` is used to define the `Command` struct fields.
 ///
 /// See the documentation for the `Command` struct methods and fields to learn how to use the parsed data in your command line interface application logic.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Command {
     /// Vector of ordered command line arguments
     pub argv: Vec<String>,
