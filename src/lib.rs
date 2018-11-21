@@ -383,6 +383,32 @@ impl Command {
         false
     }
 
+    /// Returns boolean for the question "Do the command arguments to the executable match the argument strings and sequence in `needle_vec` Vector?"
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c = commandlines::Command::new();
+    ///
+    /// if c.contains_sequence(vec!["filter", "help"]) {
+    ///     // the command sequence was identified as "[executable] filter help"
+    /// }
+    /// ```
+    pub fn contains_sequence(&self, needle_vec: Vec<&str>) -> bool {
+        // confirm that the request does not exceed the length of arguments in the command
+        // subtract value of 1 for the executable which is excluded in this test
+        if needle_vec.len() > (self.argv.len() - 1) {
+            return false;
+        }
+        for (index, arg) in needle_vec.iter().enumerate() {
+            if *arg != self.argv[index + 1] {
+                return false;
+            }
+        }
+
+        true
+    }
+
     /// Returns Option<&String> definition for a key defined by `needle`
     ///
     /// Returns `None` if the option was not used in the command
@@ -853,6 +879,29 @@ mod tests {
         assert_eq!(c2.contains_any_option(vec!["--help", "-h"]), true);
         assert_eq!(c1.contains_any_option(vec!["--bogus", "-t"]), false);
         assert_eq!(c1.contains_any_option(vec!["subcmd", "bogus"]), false);
+    }
+
+    #[test]
+    fn command_method_contains_sequence() {
+        let c = Command::new_with_vec(vec![
+            "test".to_string(),
+            "subcmd".to_string(),
+            "subsubcmd".to_string(),
+        ]);
+        assert_eq!(c.contains_sequence(vec!["subcmd", "subsubcmd"]), true);
+        assert_eq!(c.contains_sequence(vec!["subcmd"]), true);
+        assert_eq!(c.contains_sequence(vec!["subsubcmd", "subcmd"]), false); // wrong order fails
+        assert_eq!(c.contains_sequence(vec!["bogus", "subsubcmd"]), false); // any invalid string fails
+        assert_eq!(c.contains_sequence(vec!["subcmd", "bogus"]), false); // any invalid string fails
+        assert_eq!(
+            c.contains_sequence(vec!["subcmd", "subsubcmd", "toomuchinfo"]),
+            false
+        ); // fail with too many argument requests c/w command that was entered
+        assert_eq!(c.contains_sequence(vec!["bogus", "bogus", "bogus"]), false); // fail all invalid strings
+        assert_eq!(
+            c.contains_sequence(vec!["subcmd", "subsubcmd", "more", "evenmore", "lotsmore"]),
+            false
+        );
     }
 
     #[test]
