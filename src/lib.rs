@@ -483,6 +483,44 @@ impl Command {
         self.argv.get(needle)
     }
 
+    /// Returns `Option<&String>` for the first positional argument to the executable
+    ///
+    /// Returns `None` if there are no arguments to the executable
+    ///
+    /// ```
+    /// let c = commandlines::Command::new();
+    ///
+    /// match c.get_argument_first() {
+    ///     Some(x) => println!("The first positional argument is {}", *x),
+    ///     None => eprintln!("There are no arguments to the executable")
+    /// }
+    /// ```
+    pub fn get_argument_first(&self) -> Option<&String> {
+        match &self.first_arg {
+            Some(x) => Some(x),
+            None => None,
+        }
+    }
+
+    /// Returns `Option<&String>` for the last positional argument to the executable
+    ///
+    /// Returns `None` if there are no arguments to the executable
+    ///
+    /// ```
+    /// let c = commandlines::Command::new();
+    ///
+    /// match c.get_argument_last() {
+    ///     Some(x) => println!("The last positional argument is {}", *x),
+    ///     None => eprintln!("There are no arguments to the executable")
+    /// }
+    /// ```
+    pub fn get_argument_last(&self) -> Option<&String> {
+        match &self.last_arg {
+            Some(x) => Some(x),
+            None => None,
+        }
+    }
+
     /// Returns `Option<usize>` for index position of the argument `needle` in the `Command.argv` Vector
     ///
     /// Returns `None` if `needle` does not match a string in the Vector
@@ -1007,6 +1045,56 @@ mod tests {
         assert_eq!(c.get_argument_at(0), Some(&String::from("test"))); // zero indexed request
         assert_eq!(c.get_argument_at(1), Some(&String::from("-o"))); // valid index
         assert_eq!(c.get_argument_at(10), None); // invalid index
+    }
+
+    #[test]
+    fn command_method_get_argument_first() {
+        let c1 = Command::new_with_vec(vec!["test".to_string(), "-o".to_string()]);
+        let c2 = Command::new_with_vec(vec![
+            "test".to_string(),
+            "-o".to_string(),
+            "more".to_string(),
+        ]);
+        let c3 = Command::new_with_vec(vec!["test".to_string(), "first".to_string()]);
+        let c4 = Command::new_with_vec(vec!["test".to_string(), "--help".to_string()]);
+        let c5 = Command::new_with_vec(vec![
+            "test".to_string(),
+            "--help".to_string(),
+            "more".to_string(),
+        ]);
+        let c6 = Command::new_with_vec(vec!["test".to_string()]);
+
+        assert_eq!(c1.get_argument_first(), Some(&String::from("-o"))); // short option
+        assert_eq!(c2.get_argument_first(), Some(&String::from("-o"))); // short option with additional args
+        assert_eq!(c3.get_argument_first(), Some(&String::from("first"))); // subcommand style argument
+        assert_eq!(c4.get_argument_first(), Some(&String::from("--help"))); // long option
+        assert_eq!(c5.get_argument_first(), Some(&String::from("--help"))); // long option with additional args
+        assert_eq!(c6.get_argument_first(), None);
+    }
+
+    #[test]
+    fn command_method_get_argument_last() {
+        let c1 = Command::new_with_vec(vec!["test".to_string(), "-o".to_string()]);
+        let c2 = Command::new_with_vec(vec![
+            "test".to_string(),
+            "-o".to_string(),
+            "more".to_string(),
+        ]);
+        let c3 = Command::new_with_vec(vec!["test".to_string(), "first".to_string()]);
+        let c4 = Command::new_with_vec(vec!["test".to_string(), "--help".to_string()]);
+        let c5 = Command::new_with_vec(vec![
+            "test".to_string(),
+            "--help".to_string(),
+            "more".to_string(),
+        ]);
+        let c6 = Command::new_with_vec(vec!["test".to_string()]);
+
+        assert_eq!(c1.get_argument_last(), Some(&String::from("-o"))); // short option
+        assert_eq!(c2.get_argument_last(), Some(&String::from("more"))); // short option followed by LP arg
+        assert_eq!(c3.get_argument_last(), Some(&String::from("first"))); // subcommand style argument
+        assert_eq!(c4.get_argument_last(), Some(&String::from("--help"))); // long option
+        assert_eq!(c5.get_argument_last(), Some(&String::from("more"))); // long option followed by LP arg
+        assert_eq!(c6.get_argument_last(), None);
     }
 
     #[test]
