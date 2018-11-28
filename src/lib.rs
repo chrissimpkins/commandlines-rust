@@ -502,6 +502,51 @@ impl Command {
     pub fn get_index_of(&self, needle: &str) -> Option<usize> {
         self.argv.iter().position(|x| x == needle)
     }
+
+    /// Returns boolean for the question "Is the command a help request with a `-h` or `--help` flag?"
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c = commandlines::Command::new();
+    ///
+    /// if c.is_help_request() {
+    ///     // handle help request
+    /// }
+    /// ```
+    pub fn is_help_request(&self) -> bool {
+        self.options.contains(&"--help".to_string()) || self.options.contains(&"-h".to_string())
+    }
+
+    /// Returns boolean for the question "Is the command a version request with a `-v` or `--version` flag?"
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c = commandlines::Command::new();
+    ///
+    /// if c.is_version_request() {
+    ///     // handle version request
+    /// }
+    /// ```
+    pub fn is_version_request(&self) -> bool {
+        self.options.contains(&"--version".to_string()) || self.options.contains(&"-v".to_string())
+    }
+
+    /// Returns boolean for the question "Is the command a usage request with a `--usage` flag?"
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c = commandlines::Command::new();
+    ///
+    /// if c.is_usage_request() {
+    ///     // handle usage request
+    /// }
+    /// ```
+    pub fn is_usage_request(&self) -> bool {
+        self.options.contains(&"--usage".to_string())
+    }
 }
 
 // Tests
@@ -971,5 +1016,58 @@ mod tests {
         assert_eq!(c.get_index_of("test"), Some(0));
         assert_eq!(c.get_index_of("-o"), Some(1));
         assert_eq!(c.get_index_of("missing"), None);
+    }
+
+    #[test]
+    fn command_method_is_help_request() {
+        let c1 = Command::new_with_vec(vec!["test".to_string(), "-h".to_string()]);
+        let c2 = Command::new_with_vec(vec!["test".to_string(), "--help".to_string()]);
+        let c3 = Command::new_with_vec(vec!["test".to_string(), "-help".to_string()]);
+        let c4 = Command::new_with_vec(vec!["test".to_string(), "--h".to_string()]);
+        let c5 = Command::new_with_vec(vec!["test".to_string(), "--else".to_string()]);
+        let c6 = Command::new_with_vec(vec!["test".to_string(), "h".to_string()]);
+        let c7 = Command::new_with_vec(vec!["test".to_string(), "help".to_string()]);
+
+        assert_eq!(c1.is_help_request(), true);
+        assert_eq!(c2.is_help_request(), true);
+        assert_eq!(c3.is_help_request(), false);
+        assert_eq!(c4.is_help_request(), false);
+        assert_eq!(c5.is_help_request(), false);
+        assert_eq!(c6.is_help_request(), false);
+        assert_eq!(c7.is_help_request(), false);
+    }
+
+    #[test]
+    fn command_method_is_version_request() {
+        let c1 = Command::new_with_vec(vec!["test".to_string(), "-v".to_string()]);
+        let c2 = Command::new_with_vec(vec!["test".to_string(), "--version".to_string()]);
+        let c3 = Command::new_with_vec(vec!["test".to_string(), "-version".to_string()]);
+        let c4 = Command::new_with_vec(vec!["test".to_string(), "--v".to_string()]);
+        let c5 = Command::new_with_vec(vec!["test".to_string(), "--else".to_string()]);
+        let c6 = Command::new_with_vec(vec!["test".to_string(), "v".to_string()]);
+        let c7 = Command::new_with_vec(vec!["test".to_string(), "version".to_string()]);
+
+        assert_eq!(c1.is_version_request(), true);
+        assert_eq!(c2.is_version_request(), true);
+        assert_eq!(c3.is_version_request(), false);
+        assert_eq!(c4.is_version_request(), false);
+        assert_eq!(c5.is_version_request(), false);
+        assert_eq!(c6.is_version_request(), false);
+        assert_eq!(c7.is_version_request(), false);
+    }
+
+    #[test]
+    fn command_method_is_usage_request() {
+        let c1 = Command::new_with_vec(vec!["test".to_string(), "--usage".to_string()]);
+        let c2 = Command::new_with_vec(vec!["test".to_string(), "-u".to_string()]);
+        let c3 = Command::new_with_vec(vec!["test".to_string(), "-usage".to_string()]);
+        let c4 = Command::new_with_vec(vec!["test".to_string(), "--else".to_string()]);
+        let c5 = Command::new_with_vec(vec!["test".to_string(), "usage".to_string()]);
+
+        assert_eq!(c1.is_usage_request(), true);
+        assert_eq!(c2.is_usage_request(), false);
+        assert_eq!(c3.is_usage_request(), false);
+        assert_eq!(c4.is_usage_request(), false);
+        assert_eq!(c5.is_usage_request(), false);
     }
 }
