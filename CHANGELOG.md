@@ -7,6 +7,7 @@
 - add `Command::is_help_request` method
 - add `Command::is_usage_request` method
 - add `Command::is_version_request` method
+- add Clone trait support on Command struct
 
 ## v0.6.0
 
