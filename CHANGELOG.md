@@ -1,6 +1,14 @@
 # Changelog
 
-# v0.6.0
+## v0.7.0
+
+- add support for command suite style application subcommand testing
+- add `Command::contains_sequence` method
+- add `Command::is_help_request` method
+- add `Command::is_usage_request` method
+- add `Command::is_version_request` method
+
+## v0.6.0
 
 - add support for POSIX multi-option short syntax option command line argument parsing (e.g., `-lmn` = `-l -m -n`)
 - add `Command::has_mops` method
