@@ -325,7 +325,7 @@ impl Command {
     /// ```
     pub fn contains_all_options(&self, needle_vec: Vec<&str>) -> bool {
         for needle in needle_vec {
-            if !self.options.contains(&needle.to_string()) {
+            if !self.options.contains(&String::from(needle)) {
                 return false;
             }
         }
@@ -376,7 +376,7 @@ impl Command {
     /// ```
     pub fn contains_any_option(&self, needle_vec: Vec<&str>) -> bool {
         for needle in needle_vec {
-            if self.options.contains(&needle.to_string()) {
+            if self.options.contains(&String::from(needle)) {
                 return true;
             }
         }
