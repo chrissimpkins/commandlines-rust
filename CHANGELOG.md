@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.8.0
+
+- BACKWARDS INCOMPATIBLE: refactored method names with "double_dash" to "double_hyphen" terminology to use valid names for Unicode code points used on command line
+- add `Commmand::get_argument_first` method
+- add `Command::get_argument_last` method
+- add `Command::get_executable` method
+- add `Command::has_double_hyphen_args` method
+- add `Command::get_arguments_after_double_hyphen` method
+- add `Command::get_arguments_after` method
+- add PartialEq trait to Command struct
+- refactor `Command::get_argument_at` to return `Option<Cow<str>>` instead of `Option<&String>`
+- refactor `Command::get_argument_after` to return `Option<Cow<str>>` instead of `Option<&String>`
+- refactor `Command::get_definition_for` to return `Option<Cow<str>>` instead of `Option<&String>`
+- refactor String casts to `String::from` in Command methods
+
 ## v0.7.0
 
 - add support for command suite style application subcommand testing
