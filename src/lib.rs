@@ -62,8 +62,8 @@ pub struct Command {
     pub first_arg: Option<String>,
     /// `Option<String>` of last positional argument to the executable. `None` if there are no arguments to the executable.
     pub last_arg: Option<String>,
-    /// `Option<Vec<String>>` of ordered arguments that follow a double dash command line idiom. `None` if a double dash argument is not present or there are no arguments after the double dash argument.
-    pub double_dash_argv: Option<Vec<String>>,
+    /// `Option<Vec<String>>` of ordered arguments that follow a double hyphen command line idiom. `None` if a double hyphen argument is not present or there are no arguments after the double hyphen argument.
+    pub double_hyphen_argv: Option<Vec<String>>,
 }
 
 // Traits
@@ -112,7 +112,7 @@ impl Command {
         let definitions_hm = parsers::parse_definitions(&arguments);
         let first_arg_definition = parsers::parse_first_arg(&arguments);
         let last_arg_definition = parsers::parse_last_arg(&arguments);
-        let double_dash_definition = parsers::parse_double_dash_args(&arguments);
+        let double_hyphen_definition = parsers::parse_double_hyphen_args(&arguments);
 
         Command {
             argv: arguments_definition,
@@ -122,7 +122,7 @@ impl Command {
             definitions: definitions_hm,
             first_arg: first_arg_definition,
             last_arg: last_arg_definition,
-            double_dash_argv: double_dash_definition,
+            double_hyphen_argv: double_hyphen_definition,
         }
     }
 
@@ -170,7 +170,7 @@ impl Command {
     /// Returns a boolean for the question "Does the command include any multi-option short syntax style option arguments?"
     ///
     /// # Remarks
-    /// POSIX defines a short option style that uses a single dash delimiter with more than one option indicated by the individual characters defined in the argument string (e.g., `-hij` means that the command has the options `-h -i -j`).  This method provides support for determining whether a mops style option is present in the command string.
+    /// POSIX defines a short option style that uses a single hyphen delimiter with more than one option indicated by the individual characters defined in the argument string (e.g., `-hij` means that the command has the options `-h -i -j`).  This method provides support for determining whether a mops style option is present in the command string.
     ///
     /// # Examples
     ///
@@ -246,7 +246,7 @@ impl Command {
     /// Returns a boolean for the question "Does the command include the option `needle` when the POSIX multi-option short syntax option style is used?"
     ///
     /// # Remarks
-    /// The mops style defined by POSIX includes a single dash character followed by one or more alphanumeric characters in the Unicode Basic Latin set.  Each character represents a unique option switch.  For example, "-lmn" is used to indicate "-l -m -n".  This method tests against any short option formatted argument included in the command irrespective of the number of alphanumeric characters that are included.  The method does not test against long options (i.e., those that begin with two dashes).
+    /// The mops style defined by POSIX includes a single hyphen character followed by one or more alphanumeric characters in the Unicode Basic Latin set.  Each character represents a unique option switch.  For example, "-lmn" is used to indicate "-l -m -n".  This method tests against any short option formatted argument included in the command irrespective of the number of alphanumeric characters that are included.  The method does not test against long options (i.e., those that begin with two hyphens).
     ///
     /// If you do not use the mops option syntax in your application, use the `Command::contains_option()` method instead.
     ///
@@ -284,7 +284,7 @@ impl Command {
     /// Returns a boolean for the question "Does the command include the option `needle` when the POSIX multi-option short syntax option style is used?"
     ///
     /// # Remarks
-    /// The mops style defined by POSIX includes a single dash character followed by one or more alphanumeric characters in the Unicode Basic Latin set.  Each character represents a unique option switch.  For example, "-lmn" is used to indicate "-l -m -n".  This method tests against any short option formatted argument included in the command irrespective of the number of alphanumeric characters that are included.  The method does not test against long options (i.e., those that begin with two dashes).
+    /// The mops style defined by POSIX includes a single hyphen character followed by one or more alphanumeric characters in the Unicode Basic Latin set.  Each character represents a unique option switch.  For example, "-lmn" is used to indicate "-l -m -n".  This method tests against any short option formatted argument included in the command irrespective of the number of alphanumeric characters that are included.  The method does not test against long options (i.e., those that begin with two hyphens).
     ///
     /// If you do not use the mops option syntax in your application, use the `Command::contains_all_options()` method instead.
     ///
@@ -336,7 +336,7 @@ impl Command {
     /// Returns a boolean for the question "Does the command include the option `needle` when the POSIX multi-option short syntax option style is used?"
     ///
     /// # Remarks
-    /// The mops style defined by POSIX includes a single dash character followed by one or more alphanumeric characters in the Unicode Basic Latin set.  Each character represents a unique option switch.  For example, "-lmn" is used to indicate "-l -m -n".  This method tests against any short option formatted argument included in the command irrespective of the number of alphanumeric characters that are included.  The method does not test against long options (i.e., those that begin with two dashes).
+    /// The mops style defined by POSIX includes a single hyphen character followed by one or more alphanumeric characters in the Unicode Basic Latin set.  Each character represents a unique option switch.  For example, "-lmn" is used to indicate "-l -m -n".  This method tests against any short option formatted argument included in the command irrespective of the number of alphanumeric characters that are included.  The method does not test against long options (i.e., those that begin with two hyphens).
     ///
     /// If you do not use the mops option syntax in your application, use the `Command::contains_any_options()` method instead.
     ///
@@ -721,7 +721,7 @@ mod tests {
     }
 
     #[test]
-    fn command_instantiation_double_dash_argv() {
+    fn command_instantiation_double_hyphen_argv() {
         let c = Command::new_with_vec(vec![
             "test".to_string(),
             "--something".to_string(),
@@ -732,11 +732,11 @@ mod tests {
             "lastpos".to_string(),
         ]);
         let expected_vec = vec![String::from("--double"), String::from("lastpos")];
-        assert_eq!(c.double_dash_argv, Some(expected_vec));
+        assert_eq!(c.double_hyphen_argv, Some(expected_vec));
     }
 
     #[test]
-    fn command_instantiation_double_dash_argv_no_args() {
+    fn command_instantiation_double_hyphen_argv_no_args() {
         let c = Command::new_with_vec(vec![
             "test".to_string(),
             "--something".to_string(),
@@ -744,18 +744,18 @@ mod tests {
             "--another=otherdef".to_string(),
             "--".to_string(),
         ]);
-        assert_eq!(c.double_dash_argv, None);
+        assert_eq!(c.double_hyphen_argv, None);
     }
 
     #[test]
-    fn command_instantiation_double_dash_argv_no_double_dash() {
+    fn command_instantiation_double_hyphen_argv_no_double_hyphen() {
         let c = Command::new_with_vec(vec![
             "test".to_string(),
             "--something".to_string(),
             "--option=define".to_string(),
             "--another=otherdef".to_string(),
         ]);
-        assert_eq!(c.double_dash_argv, None);
+        assert_eq!(c.double_hyphen_argv, None);
     }
 
     #[test]
@@ -885,9 +885,9 @@ mod tests {
         ]);
         assert_eq!(c.contains_mops("-o"), false);
         assert_eq!(c.contains_mops("-a"), false);
-        assert_eq!(c.contains_mops("-h"), false); // should ignore all options after a double dash idiom
-        assert_eq!(c.contains_mops("-i"), false); // should ignore all options after a double dash idiom
-        assert_eq!(c.contains_mops("-j"), false); // should ignore all options after a double dash idiom
+        assert_eq!(c.contains_mops("-h"), false); // should ignore all options after a double hyphen idiom
+        assert_eq!(c.contains_mops("-i"), false); // should ignore all options after a double hyphen idiom
+        assert_eq!(c.contains_mops("-j"), false); // should ignore all options after a double hyphen idiom
     }
 
     #[test]

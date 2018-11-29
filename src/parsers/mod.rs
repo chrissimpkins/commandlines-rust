@@ -85,9 +85,9 @@ pub fn parse_last_arg(arg_list: &[String]) -> Option<String> {
     }
 }
 
-/// Returns `Options<Vec<String>>` with Vector of arguments following a double dash `--` command line argument idiom.
-/// Returns `None` if there was no double dash idiom present or there are no arguments following the double dash argument.
-pub fn parse_double_dash_args(arg_list: &[String]) -> Option<Vec<String>> {
+/// Returns `Options<Vec<String>>` with Vector of arguments following a double hyphen `--` command line argument idiom.
+/// Returns `None` if there was no double hyphen idiom present or there are no arguments following the double hyphen argument.
+pub fn parse_double_hyphen_args(arg_list: &[String]) -> Option<Vec<String>> {
     for (index, value) in arg_list.iter().enumerate() {
         if is_double_hyphen_option(&value[..]) {
             let sub_vec = arg_list[(index + 1)..arg_list.len()].to_vec();
@@ -153,7 +153,7 @@ pub fn is_double_hyphen_option(needle: &str) -> bool {
 
 /// Returns boolean for the question "Is `needle` a multi-option short syntax (mops) style option argument?"
 pub fn is_mops_option(needle: &str) -> bool {
-    // must have single dash syntax with more than one option character
+    // must have single hyphen syntax with more than one option character
     needle.starts_with('-') && !needle.starts_with("--") && needle.len() > 2
 }
 
@@ -294,7 +294,7 @@ mod tests {
     }
 
     #[test]
-    fn function_parse_double_dash_args() {
+    fn function_parse_double_hyphen_args() {
         let test_vec = vec![
             String::from("test"),
             String::from("-o"),
@@ -304,28 +304,28 @@ mod tests {
             String::from("--that"),
         ];
         let expected_vec = vec![String::from("--this"), String::from("--that")];
-        assert_eq!(parse_double_dash_args(&test_vec), Some(expected_vec));
+        assert_eq!(parse_double_hyphen_args(&test_vec), Some(expected_vec));
     }
 
     #[test]
-    fn function_parse_double_dash_args_no_post_args() {
+    fn function_parse_double_hyphen_args_no_post_args() {
         let test_vec = vec![
             String::from("test"),
             String::from("-o"),
             String::from("path"),
             String::from("--"),
         ];
-        assert_eq!(parse_double_dash_args(&test_vec), None);
+        assert_eq!(parse_double_hyphen_args(&test_vec), None);
     }
 
     #[test]
-    fn function_parse_double_dash_args_no_double_dash() {
+    fn function_parse_double_hyphen_args_no_double_hyphen() {
         let test_vec = vec![
             String::from("test"),
             String::from("-o"),
             String::from("path"),
         ];
-        assert_eq!(parse_double_dash_args(&test_vec), None);
+        assert_eq!(parse_double_hyphen_args(&test_vec), None);
     }
 
     #[test]
