@@ -167,6 +167,13 @@ impl Command {
         !self.definitions.is_empty()
     }
 
+    pub fn has_double_hyphen_args(&self) -> bool {
+        match &self.double_hyphen_argv {
+            Some(_) => true,
+            None => false,
+        }
+    }
+
     /// Returns a boolean for the question "Does the command include any multi-option short syntax style option arguments?"
     ///
     /// # Remarks
@@ -786,6 +793,30 @@ mod tests {
     fn command_method_has_definitions_false() {
         let c = Command::new_with_vec(vec!["test".to_string()]); // ignores the executable as not an argument
         assert_eq!(c.has_definitions(), false);
+    }
+
+    #[test]
+    fn command_method_has_double_hyphen_args() {
+        let c1 = Command::new_with_vec(vec![
+            "test".to_string(),
+            "-o".to_string(),
+            "--".to_string(),
+            "arg1".to_string(),
+            "--arg2".to_string(),
+        ]);
+        let c2 =
+            Command::new_with_vec(vec!["test".to_string(), "-o".to_string(), "--".to_string()]);
+        let c3 = Command::new_with_vec(vec![
+            "test".to_string(),
+            "-o".to_string(),
+            "--test".to_string(),
+            "arg1".to_string(),
+            "--arg2".to_string(),
+        ]);
+
+        assert_eq!(c1.has_double_hyphen_args(), true);
+        assert_eq!(c2.has_double_hyphen_args(), false);
+        assert_eq!(c3.has_double_hyphen_args(), false);
     }
 
     #[test]
