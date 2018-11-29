@@ -410,7 +410,7 @@ impl Command {
         true
     }
 
-    /// Returns Option<&String> definition for a key defined by `needle`
+    /// Returns `Option<Cow<'a, str>>` definition for a key defined by `needle`
     ///
     /// Returns `None` if the option was not used in the command
     ///
@@ -422,12 +422,16 @@ impl Command {
     /// let c = commandlines::Command::new();
     ///
     /// match c.get_definition_for("--name") {
-    ///     Some(x) => println!("The definition for --name is {}", *x),
+    ///     Some(x) => println!("The definition for --name is {}", x),
     ///     None => eprintln!("Missing")
     /// };
     /// ```
-    pub fn get_definition_for(&self, needle: &str) -> Option<&String> {
-        self.definitions.get(&String::from(needle))
+    pub fn get_definition_for<'a>(&'a self, needle: &str) -> Option<Cow<'a, str>> {
+        if let Some(x) = self.definitions.get(&String::from(needle)) {
+            return Some(Cow::Borrowed(x));
+        }
+
+        None
     }
 
     /// Returns `Option<Cow<'a, str>>` for argument at index position `i+1` for `needle` at index position `i`
@@ -1023,7 +1027,7 @@ mod tests {
 
         assert_eq!(
             c.get_definition_for("--option"),
-            Some(&String::from("definition"))
+            Some(Cow::Borrowed("definition"))
         );
     }
 
