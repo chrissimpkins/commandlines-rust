@@ -460,7 +460,7 @@ impl Command {
         None
     }
 
-    /// Returns `Option<&String>` for the argument at index position `needle`
+    /// Returns `Option<Cow<'a, str>>` for the argument at index position `needle`
     ///
     /// Returns `None` if `needle` is outside of the bounds of valid index values
     ///
@@ -471,22 +471,28 @@ impl Command {
     /// let c = commandlines::Command::new();
     ///
     /// match c.get_argument_at(0) {
-    ///     Some(x) => println!("The executable is {}", *x),
+    ///     Some(x) => println!("The executable is {}", x),
     ///     None => eprintln!("Error")
     /// }
     ///
     /// match c.get_argument_at(1) {
-    ///     Some(x) => println!("The first positional argument is {}", *x),
+    ///     Some(x) => println!("The first positional argument is {}", x),
     ///     None => eprintln!("There is no first positional argument")
     /// }
     /// ```
-    pub fn get_argument_at(&self, needle: usize) -> Option<&String> {
-        self.argv.get(needle)
+    pub fn get_argument_at<'a>(&'a self, needle: usize) -> Option<Cow<'a, str>> {
+        if let Some(x) = self.argv.get(needle) {
+            return Some(Cow::Borrowed(x));
+        }
+
+        None
     }
 
     /// Returns `Option<Cow<'a, str>>` for the first positional argument to the executable
     ///
     /// Returns `None` if there are no arguments to the executable
+    ///
+    /// # Examples
     ///
     /// ```
     /// let c = commandlines::Command::new();
@@ -506,6 +512,8 @@ impl Command {
     /// Returns `Option<Cow<'a, str>>` for the last positional argument to the executable
     ///
     /// Returns `None` if there are no arguments to the executable
+    ///
+    /// # Examples
     ///
     /// ```
     /// let c = commandlines::Command::new();
@@ -1057,8 +1065,8 @@ mod tests {
     fn command_method_get_argument_at() {
         let c = Command::new_with_vec(vec!["test".to_string(), "-o".to_string()]);
 
-        assert_eq!(c.get_argument_at(0), Some(&String::from("test"))); // zero indexed request
-        assert_eq!(c.get_argument_at(1), Some(&String::from("-o"))); // valid index
+        assert_eq!(c.get_argument_at(0), Some(Cow::Borrowed("test"))); // zero indexed request
+        assert_eq!(c.get_argument_at(1), Some(Cow::Borrowed("-o"))); // valid index
         assert_eq!(c.get_argument_at(10), None); // invalid index
     }
 
