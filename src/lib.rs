@@ -513,6 +513,32 @@ impl Command {
         None
     }
 
+    /// Returns `Option<Vec<Cow<str>>>` for the arguments in sequence that follow a double hyphen `--` command line idiom
+    ///
+    /// Returns `None` if there is no double hyphen idiom or there are no arguments that follow the idiom
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c = commandlines::Command::new();
+    ///
+    /// match c.get_arguments_after_double_hyphen() {
+    ///     Some(x) => println!("Args following double hyphen: {:?}", x),
+    ///     None => eprintln!("There are no arguments that follow a double hyphen idiom")
+    /// }
+    /// ```
+    pub fn get_arguments_after_double_hyphen(&self) -> Option<Vec<Cow<str>>> {
+        if let Some(x) = &self.double_hyphen_argv {
+            let mut v: Vec<Cow<str>> = Vec::new();
+            for arg in x {
+                v.push(Cow::Borrowed(arg))
+            }
+            return Some(v);
+        }
+
+        None
+    }
+
     /// Returns `Option<Cow<str>>` for the first positional argument to the executable
     ///
     /// Returns `None` if there are no arguments to the executable
@@ -1126,6 +1152,36 @@ mod tests {
         assert_eq!(c.get_argument_at(0), Some(Cow::Borrowed("test"))); // zero indexed request
         assert_eq!(c.get_argument_at(1), Some(Cow::Borrowed("-o"))); // valid index
         assert_eq!(c.get_argument_at(10), None); // invalid index
+    }
+
+    #[test]
+    fn command_method_get_arguments_after_double_hyphen() {
+        let c1 = Command::new_with_vec(vec![
+            "test".to_string(),
+            "-o".to_string(),
+            "--".to_string(),
+            "--after1".to_string(),
+            "--after2".to_string(),
+            "path".to_string(),
+        ]);
+        let c2 =
+            Command::new_with_vec(vec!["test".to_string(), "-o".to_string(), "--".to_string()]);
+        let c3 = Command::new_with_vec(vec![
+            "test".to_string(),
+            "-o".to_string(),
+            "--after1".to_string(),
+            "--after2".to_string(),
+        ]);
+
+        let c1_exp = Some(vec![
+            Cow::Borrowed("--after1"),
+            Cow::Borrowed("--after2"),
+            Cow::Borrowed("path"),
+        ]);
+
+        assert_eq!(c1.get_arguments_after_double_hyphen(), c1_exp);
+        assert_eq!(c2.get_arguments_after_double_hyphen(), None);
+        assert_eq!(c3.get_arguments_after_double_hyphen(), None);
     }
 
     #[test]
