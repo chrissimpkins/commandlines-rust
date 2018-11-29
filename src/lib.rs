@@ -484,7 +484,7 @@ impl Command {
         self.argv.get(needle)
     }
 
-    /// Returns `Option<&String>` for the first positional argument to the executable
+    /// Returns `Option<Cow<'a, str>>` for the first positional argument to the executable
     ///
     /// Returns `None` if there are no arguments to the executable
     ///
@@ -492,18 +492,18 @@ impl Command {
     /// let c = commandlines::Command::new();
     ///
     /// match c.get_argument_first() {
-    ///     Some(x) => println!("The first positional argument is {}", *x),
+    ///     Some(x) => println!("The first positional argument is {}", x),
     ///     None => eprintln!("There are no arguments to the executable")
     /// }
     /// ```
-    pub fn get_argument_first(&self) -> Option<&String> {
+    pub fn get_argument_first<'a>(&'a self) -> Option<Cow<'a, str>> {
         match &self.first_arg {
-            Some(x) => Some(x),
+            Some(x) => Some(Cow::Borrowed(x)),
             None => None,
         }
     }
 
-    /// Returns `Option<&String>` for the last positional argument to the executable
+    /// Returns `Option<Cow<'a, str>>` for the last positional argument to the executable
     ///
     /// Returns `None` if there are no arguments to the executable
     ///
@@ -511,22 +511,16 @@ impl Command {
     /// let c = commandlines::Command::new();
     ///
     /// match c.get_argument_last() {
-    ///     Some(x) => println!("The last positional argument is {}", *x),
+    ///     Some(x) => println!("The last positional argument is {}", x),
     ///     None => eprintln!("There are no arguments to the executable")
     /// }
     /// ```
-    pub fn get_argument_last(&self) -> Option<&String> {
+    pub fn get_argument_last<'a>(&'a self) -> Option<Cow<'a, str>> {
         match &self.last_arg {
-            Some(x) => Some(x),
+            Some(x) => Some(Cow::Borrowed(x)),
             None => None,
         }
     }
-    // pub fn get_argument_last<'a>(&'a self) -> Option<Cow<'a, str>> {
-    //     match &self.last_arg {
-    //         Some(x) => Some(Cow::Borrowed(x)),
-    //         None => None,
-    //     }
-    // }
 
     /// Returns `Cow<'a, str>` for the executable
     ///
@@ -1085,11 +1079,11 @@ mod tests {
         ]);
         let c6 = Command::new_with_vec(vec!["test".to_string()]);
 
-        assert_eq!(c1.get_argument_first(), Some(&String::from("-o"))); // short option
-        assert_eq!(c2.get_argument_first(), Some(&String::from("-o"))); // short option with additional args
-        assert_eq!(c3.get_argument_first(), Some(&String::from("first"))); // subcommand style argument
-        assert_eq!(c4.get_argument_first(), Some(&String::from("--help"))); // long option
-        assert_eq!(c5.get_argument_first(), Some(&String::from("--help"))); // long option with additional args
+        assert_eq!(c1.get_argument_first(), Some(Cow::Borrowed("-o"))); // short option
+        assert_eq!(c2.get_argument_first(), Some(Cow::Borrowed("-o"))); // short option with additional args
+        assert_eq!(c3.get_argument_first(), Some(Cow::Borrowed("first"))); // subcommand style argument
+        assert_eq!(c4.get_argument_first(), Some(Cow::Borrowed("--help"))); // long option
+        assert_eq!(c5.get_argument_first(), Some(Cow::Borrowed("--help"))); // long option with additional args
         assert_eq!(c6.get_argument_first(), None);
     }
 
@@ -1110,12 +1104,12 @@ mod tests {
         ]);
         let c6 = Command::new_with_vec(vec!["test".to_string()]);
 
-        assert_eq!(c1.get_argument_last(), Some(&String::from("-o"))); // short option
-        assert_eq!(c2.get_argument_last(), Some(&String::from("more"))); // short option followed by LP arg
-        assert_eq!(c3.get_argument_last(), Some(&String::from("first"))); // subcommand style argument
-        assert_eq!(c4.get_argument_last(), Some(&String::from("--help"))); // long option
-        assert_eq!(c5.get_argument_last(), Some(&String::from("more"))); // long option followed by LP arg
-                                                                         // assert_eq!(c1.get_argument_last(), Some(Cow::Borrowed("-o")));
+        assert_eq!(c1.get_argument_last(), Some(Cow::Borrowed("-o"))); // short option
+        assert_eq!(c2.get_argument_last(), Some(Cow::Borrowed("more"))); // short option followed by LP arg
+        assert_eq!(c3.get_argument_last(), Some(Cow::Borrowed("first"))); // subcommand style argument
+        assert_eq!(c4.get_argument_last(), Some(Cow::Borrowed("--help"))); // long option
+        assert_eq!(c5.get_argument_last(), Some(Cow::Borrowed("more"))); // long option followed by LP arg
+        assert_eq!(c1.get_argument_last(), Some(Cow::Borrowed("-o")));
         assert_eq!(c6.get_argument_last(), None);
     }
 
