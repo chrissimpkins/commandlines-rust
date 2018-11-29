@@ -46,7 +46,7 @@ use std::fmt;
 /// The Vector of command line arguments presented to the executable in `std::env::args().collect()` is used to define the `Command` struct fields.
 ///
 /// See the documentation for the `Command` struct methods and fields to learn how to use the parsed data in your command line interface application logic.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Command {
     /// Vector of ordered command line arguments
     pub argv: Vec<String>,
@@ -620,6 +620,15 @@ impl Command {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn command_instantiation_partial_eq() {
+        let c1 = Command::new_with_vec(vec!["test".to_string(), "arg".to_string()]);
+        let c2 = Command::new_with_vec(vec!["test".to_string(), "arg".to_string()]);
+        let c3 = Command::new_with_vec(vec!["test".to_string(), "else".to_string()]);
+        assert!(c1 == c2);
+        assert!(c1 != c3);
+    }
 
     #[test]
     fn command_instantiation_environment_args_test() {
