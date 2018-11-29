@@ -485,6 +485,28 @@ impl Command {
         None
     }
 
+    pub fn get_arguments_after(&self, needle: &str) -> Option<Vec<Cow<str>>> {
+        for (index, value) in self.argv.iter().enumerate() {
+            // test for presence of needle in argv vector
+            if value == needle {
+                // if found, confirm that there is at least one arg after
+                if self.argv.get(index + 1).is_some() {
+                    // make a new Vec<Cow<str>> to fill with arg strings for return to calling code
+                    // and fill with the arguments, maintaining valid sequence of arguments
+                    let mut v: Vec<Cow<str>> = Vec::new();
+                    for arg in &self.argv[(index + 1)..] {
+                        v.push(Cow::Borrowed(arg));
+                    }
+                    return Some(v);
+                } else {
+                    return None;
+                }
+            }
+        }
+
+        None
+    }
+
     /// Returns `Option<Cow<str>>` for the argument at index position `needle`
     ///
     /// Returns `None` if `needle` is outside of the bounds of valid index values
@@ -1143,6 +1165,41 @@ mod tests {
         let c = Command::new_with_vec(vec!["test".to_string(), "-o".to_string()]);
 
         assert_eq!(c.get_argument_after("bogus"), None);
+    }
+
+    #[test]
+    fn command_method_get_arguments_after() {
+        let c1 = Command::new_with_vec(vec![
+            "test".to_string(),
+            "-o".to_string(),
+            "path1".to_string(),
+        ]);
+
+        let c2 = Command::new_with_vec(vec![
+            "test".to_string(),
+            "-o".to_string(),
+            "path1".to_string(),
+            "path2".to_string(),
+        ]);
+
+        let c3 = Command::new_with_vec(vec![
+            "test".to_string(),
+            "-o".to_string(),
+            "--out".to_string(),
+            "--other".to_string(),
+        ]);
+
+        let c4 = Command::new_with_vec(vec!["test".to_string(), "-o".to_string()]);
+
+        let c1_exp = Some(vec![Cow::Borrowed("path1")]);
+        let c2_exp = Some(vec![Cow::Borrowed("path1"), Cow::Borrowed("path2")]);
+        let c3_exp = Some(vec![Cow::Borrowed("--out"), Cow::Borrowed("--other")]);
+
+        assert_eq!(c1.get_arguments_after("-o"), c1_exp); // collects single non-option arg
+        assert_eq!(c2.get_arguments_after("-o"), c2_exp); // collects multiple non-option args
+        assert_eq!(c3.get_arguments_after("-o"), c3_exp); // collects option args
+        assert_eq!(c4.get_arguments_after("-o"), None); // missing args after request
+        assert_eq!(c1.get_arguments_after("--bogus"), None); // invalid request (not present in command)
     }
 
     #[test]
