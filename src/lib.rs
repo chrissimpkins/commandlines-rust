@@ -413,6 +413,7 @@ impl Command {
     ///     // the command sequence was identified as "[executable] filter help"
     /// }
     /// ```
+    #[cfg_attr(feature = "cargo-clippy", allow(needless_pass_by_value))]
     pub fn contains_sequence(&self, needle_vec: Vec<&str>) -> bool {
         // confirm that the request does not exceed the length of arguments in the command
         // subtract value of 1 for the executable which is excluded in this test
@@ -428,7 +429,7 @@ impl Command {
         true
     }
 
-    /// Returns `Option<Cow<'a, str>>` definition for a key defined by `needle`
+    /// Returns `Option<Cow<str>>` definition for a key defined by `needle`
     ///
     /// Returns `None` if the option was not used in the command
     ///
@@ -444,7 +445,7 @@ impl Command {
     ///     None => eprintln!("Missing")
     /// };
     /// ```
-    pub fn get_definition_for<'a>(&'a self, needle: &str) -> Option<Cow<'a, str>> {
+    pub fn get_definition_for(&self, needle: &str) -> Option<Cow<str>> {
         if let Some(x) = self.definitions.get(&String::from(needle)) {
             return Some(Cow::Borrowed(x));
         }
@@ -452,7 +453,7 @@ impl Command {
         None
     }
 
-    /// Returns `Option<Cow<'a, str>>` for argument at index position `i+1` for `needle` at index position `i`
+    /// Returns `Option<Cow<str>>` for argument at index position `i+1` for `needle` at index position `i`
     ///
     /// Returns `None` if `needle` is the last positional argument in the command
     ///
@@ -472,7 +473,7 @@ impl Command {
     ///     None => eprintln!("-o is the last positional argument in the command")
     /// }
     /// ```
-    pub fn get_argument_after<'a>(&'a self, needle: &str) -> Option<Cow<'a, str>> {
+    pub fn get_argument_after(&self, needle: &str) -> Option<Cow<str>> {
         for (index, value) in self.argv.iter().enumerate() {
             if value == needle {
                 if let Some(x) = self.argv.get(index + 1) {
@@ -484,7 +485,7 @@ impl Command {
         None
     }
 
-    /// Returns `Option<Cow<'a, str>>` for the argument at index position `needle`
+    /// Returns `Option<Cow<str>>` for the argument at index position `needle`
     ///
     /// Returns `None` if `needle` is outside of the bounds of valid index values
     ///
@@ -504,7 +505,7 @@ impl Command {
     ///     None => eprintln!("There is no first positional argument")
     /// }
     /// ```
-    pub fn get_argument_at<'a>(&'a self, needle: usize) -> Option<Cow<'a, str>> {
+    pub fn get_argument_at(&self, needle: usize) -> Option<Cow<str>> {
         if let Some(x) = self.argv.get(needle) {
             return Some(Cow::Borrowed(x));
         }
@@ -512,7 +513,7 @@ impl Command {
         None
     }
 
-    /// Returns `Option<Cow<'a, str>>` for the first positional argument to the executable
+    /// Returns `Option<Cow<str>>` for the first positional argument to the executable
     ///
     /// Returns `None` if there are no arguments to the executable
     ///
@@ -526,14 +527,14 @@ impl Command {
     ///     None => eprintln!("There are no arguments to the executable")
     /// }
     /// ```
-    pub fn get_argument_first<'a>(&'a self) -> Option<Cow<'a, str>> {
+    pub fn get_argument_first(&self) -> Option<Cow<str>> {
         match &self.first_arg {
             Some(x) => Some(Cow::Borrowed(x)),
             None => None,
         }
     }
 
-    /// Returns `Option<Cow<'a, str>>` for the last positional argument to the executable
+    /// Returns `Option<Cow<str>>` for the last positional argument to the executable
     ///
     /// Returns `None` if there are no arguments to the executable
     ///
@@ -547,14 +548,14 @@ impl Command {
     ///     None => eprintln!("There are no arguments to the executable")
     /// }
     /// ```
-    pub fn get_argument_last<'a>(&'a self) -> Option<Cow<'a, str>> {
+    pub fn get_argument_last(&self) -> Option<Cow<str>> {
         match &self.last_arg {
             Some(x) => Some(Cow::Borrowed(x)),
             None => None,
         }
     }
 
-    /// Returns `Cow<'a, str>` for the executable
+    /// Returns `Cow<str>` for the executable
     ///
     /// # Examples
     ///
@@ -564,7 +565,7 @@ impl Command {
     /// println!("{} v1.0.0", c.get_executable())
     ///
     /// ```
-    pub fn get_executable<'a>(&'a self) -> Cow<'a, str> {
+    pub fn get_executable(&self) -> Cow<str> {
         Cow::Borrowed(&self.executable)
     }
 
