@@ -485,6 +485,20 @@ impl Command {
         None
     }
 
+    /// Returns `Option<Vec<Cow<str>>>` for the one or more ordered arguments that follow the `needle` argument
+    ///
+    /// Returns `None` if `needle` is not in the command or there are no arguments after the `needle` argument
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c = commandlines::Command::new();
+    ///
+    /// match c.get_arguments_after("-o") {
+    ///     Some(x) => println!("The arguments after the -o option are {:?}", x),
+    ///     None => eprintln!("-o not found or there were no arguments after -o")
+    /// }
+    /// ```
     pub fn get_arguments_after(&self, needle: &str) -> Option<Vec<Cow<str>>> {
         for (index, value) in self.argv.iter().enumerate() {
             // test for presence of needle in argv vector
