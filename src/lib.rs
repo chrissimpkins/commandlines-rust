@@ -167,6 +167,17 @@ impl Command {
         !self.definitions.is_empty()
     }
 
+    /// Returns a boolean for the question "Does the command include any arguments following the double hyphen (--) idiom?"
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c = commandlines::Command::new();
+    ///
+    /// if c.has_double_hyphen_args() {
+    ///     // arguments were identified following a double hyphen idiom
+    /// }
+    /// ```
     pub fn has_double_hyphen_args(&self) -> bool {
         match &self.double_hyphen_argv {
             Some(_) => true,
