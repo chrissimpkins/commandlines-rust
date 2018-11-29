@@ -8,6 +8,7 @@
 #![cfg_attr(feature = "cargo-clippy", allow(new_without_default_derive))]
 
 pub mod parsers;
+pub mod utilities;
 
 use std::borrow::Cow;
 use std::collections::HashMap;
