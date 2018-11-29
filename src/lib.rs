@@ -9,6 +9,7 @@
 
 pub mod parsers;
 
+use std::borrow::Cow;
 use std::collections::HashMap;
 use std::fmt;
 
@@ -519,6 +520,26 @@ impl Command {
             Some(x) => Some(x),
             None => None,
         }
+    }
+    // pub fn get_argument_last<'a>(&'a self) -> Option<Cow<'a, str>> {
+    //     match &self.last_arg {
+    //         Some(x) => Some(Cow::Borrowed(x)),
+    //         None => None,
+    //     }
+    // }
+
+    /// Returns `Cow<'a, str>` for the executable
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c = commandlines::Command::new();
+    ///
+    /// println!("{} v1.0.0", c.get_executable())
+    ///
+    /// ```
+    pub fn get_executable<'a>(&'a self) -> Cow<'a, str> {
+        Cow::Borrowed(&self.executable)
     }
 
     /// Returns `Option<usize>` for index position of the argument `needle` in the `Command.argv` Vector
@@ -1094,7 +1115,16 @@ mod tests {
         assert_eq!(c3.get_argument_last(), Some(&String::from("first"))); // subcommand style argument
         assert_eq!(c4.get_argument_last(), Some(&String::from("--help"))); // long option
         assert_eq!(c5.get_argument_last(), Some(&String::from("more"))); // long option followed by LP arg
+                                                                         // assert_eq!(c1.get_argument_last(), Some(Cow::Borrowed("-o")));
         assert_eq!(c6.get_argument_last(), None);
+    }
+
+    #[test]
+    fn command_method_get_executable() {
+        let c1 = Command::new_with_vec(vec!["test".to_string(), "-o".to_string()]);
+        let c2 = Command::new_with_vec(vec!["~/user/path/to/test".to_string(), "-o".to_string()]);
+        assert_eq!(c1.get_executable(), Cow::Borrowed("test"));
+        assert_eq!(c2.get_executable(), Cow::Borrowed("~/user/path/to/test"));
     }
 
     #[test]
