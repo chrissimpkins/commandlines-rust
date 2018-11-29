@@ -430,7 +430,7 @@ impl Command {
         self.definitions.get(&String::from(needle))
     }
 
-    /// Returns `Option<&String>` for argument at index position `i+1` for `needle` at index position `i`
+    /// Returns `Option<Cow<'a, str>>` for argument at index position `i+1` for `needle` at index position `i`
     ///
     /// Returns `None` if `needle` is the last positional argument in the command
     ///
@@ -446,14 +446,16 @@ impl Command {
     /// let c = commandlines::Command::new();
     ///
     /// match c.get_argument_after("-o") {
-    ///     Some(x) => println!("The filepath definition after -o is {}", *x),
+    ///     Some(x) => println!("The filepath definition after -o is {}", x),
     ///     None => eprintln!("-o is the last positional argument in the command")
     /// }
     /// ```
-    pub fn get_argument_after(&self, needle: &str) -> Option<&String> {
+    pub fn get_argument_after<'a>(&'a self, needle: &str) -> Option<Cow<'a, str>> {
         for (index, value) in self.argv.iter().enumerate() {
             if value == needle {
-                return self.argv.get(index + 1);
+                if let Some(x) = self.argv.get(index + 1) {
+                    return Some(Cow::Borrowed(x));
+                }
             }
         }
 
@@ -1044,7 +1046,7 @@ mod tests {
             "path".to_string(),
         ]);
 
-        assert_eq!(c.get_argument_after("-o"), Some(&String::from("path")));
+        assert_eq!(c.get_argument_after("-o"), Some(Cow::Borrowed("path")));
     }
 
     #[test]
