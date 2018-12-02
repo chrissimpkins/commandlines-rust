@@ -189,7 +189,7 @@ impl Command {
     /// Returns a boolean for the question "Does the command include any invalid options based upon valid options defined in `valid_opts`?"
     ///
     /// # Examples
-    /// Define valid options in a iterable data structure and pass a reference to this data structure as an argument to the method.
+    /// Define valid options in a slice or array and pass a reference to this data structure as an argument to the method.
     ///
     /// ```
     /// const VALIDOPTS: [&str; 5] = [
@@ -219,7 +219,7 @@ impl Command {
     /// Returns a boolean for the question "Does the command include any invalid definition options based upon valid definition options defined in `valid_defs`?"
     ///
     /// # Examples
-    /// Define valid definition options in a iterable data structure and pass a reference to this data structure as an argument to the method.
+    /// Define valid definition options in a slice or array and pass a reference to this data structure as an argument to the method.
     ///
     /// ```
     /// const VALIDDEFS: [&str; 2] = [
