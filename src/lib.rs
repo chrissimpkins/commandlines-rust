@@ -186,20 +186,18 @@ impl Command {
         }
     }
 
-    /// Returns a boolean for the question "Does the command include any invalid options based upon valid option definitions present in `valid_opts`?"
+    /// Returns a boolean for the question "Does the command include any invalid options based upon valid options defined in `valid_opts`?"
     ///
     /// # Examples
-    /// Define valid options in a iterable data structure and pass a referene to this data structure as an argument to the method.
+    /// Define valid options in a iterable data structure and pass a reference to this data structure as an argument to the method.
     ///
     /// ```
-    /// const VALIDOPTS: [&str; 7] = [
+    /// const VALIDOPTS: [&str; 5] = [
     ///       "-h",
     ///       "--help",
     ///       "--usage",
     ///       "-v",
-    ///       "--version",
-    ///       "-o",
-    ///       "--output",
+    ///       "--version"
     /// ];
     ///
     /// let c = commandlines::Command::new();
@@ -208,11 +206,36 @@ impl Command {
     ///     eprintln!("Invalid option detected");
     /// }
     /// ```
-    ///
-    ///
     pub fn has_invalid_options(&self, valid_opts: &[&str]) -> bool {
         for option in &self.options {
             if !valid_opts.contains(&&option[..]) {
+                return true;
+            }
+        }
+
+        false
+    }
+
+    /// Returns a boolean for the question "Does the command include any invalid definition options based upon valid definition options defined in `valid_defs`?"
+    ///
+    /// # Examples
+    /// Define valid definition options in a iterable data structure and pass a reference to this data structure as an argument to the method.
+    ///
+    /// ```
+    /// const VALIDDEFS: [&str; 2] = [
+    ///       "-o",
+    ///       "--output",
+    /// ];
+    ///
+    /// let c = commandlines::Command::new();
+    ///
+    /// if c.has_invalid_definitions(&VALIDDEFS) {
+    ///     eprintln!("Invalid definition option detected");
+    /// }
+    /// ```
+    pub fn has_invalid_definitions(&self, valid_defs: &[&str]) -> bool {
+        for definition in self.definitions.keys() {
+            if !valid_defs.contains(&&definition[..]) {
                 return true;
             }
         }
@@ -965,11 +988,31 @@ mod tests {
     }
 
     #[test]
+    fn command_method_has_invalid_definitions() {
+        let valid_defs: [&str; 2] = ["-o", "--output"];
+        let c1 = Command::new_with_vec(vec!["test".to_string(), "--output=test".to_string()]);
+        let c2 = Command::new_with_vec(vec!["test".to_string(), "-o=test".to_string()]);
+        let c3 = Command::new_with_vec(vec!["test".to_string(), "--other=bogus".to_string()]);
+        let c4 = Command::new_with_vec(vec![
+            "test".to_string(),
+            "--else=invalid".to_string(),
+            "-o=test".to_string(),
+        ]);
+        let c5 = Command::new_with_vec(vec!["test".to_string(), "-l".to_string()]);
+
+        assert_eq!(c1.has_invalid_definitions(&valid_defs), false); // valid long def
+        assert_eq!(c2.has_invalid_definitions(&valid_defs), false); // valid short def
+        assert_eq!(c3.has_invalid_definitions(&valid_defs), true); // invalid with only invalid arg
+        assert_eq!(c4.has_invalid_definitions(&valid_defs), true); // invalid with mixed valid/invalid defs
+        assert_eq!(c5.has_invalid_definitions(&valid_defs), false); // should be valid when no definitions are present
+    }
+
+    #[test]
     fn command_method_has_invalid_options() {
-        let valid_options: [&str; 2] = ["-o", "--output"];
-        let c1 = Command::new_with_vec(vec!["test".to_string(), "--output".to_string()]);
-        let c2 = Command::new_with_vec(vec!["test".to_string(), "-o".to_string()]);
-        let c3 = Command::new_with_vec(vec!["test".to_string(), "--help".to_string()]);
+        let valid_options: [&str; 2] = ["-h", "--help"];
+        let c1 = Command::new_with_vec(vec!["test".to_string(), "--help".to_string()]);
+        let c2 = Command::new_with_vec(vec!["test".to_string(), "-h".to_string()]);
+        let c3 = Command::new_with_vec(vec!["test".to_string(), "--output".to_string()]);
         let c4 = Command::new_with_vec(vec![
             "test".to_string(),
             "--else".to_string(),
