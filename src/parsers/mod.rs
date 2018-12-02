@@ -134,6 +134,24 @@ pub fn parse_mops(arg_list: &[String]) -> Option<Vec<String>> {
     }
 }
 
+pub fn parse_loptind_index(arg_list: &[String]) -> usize {
+    let mut counter = 0;
+    for (index, value) in arg_list.iter().enumerate() {
+        if value.starts_with('-') {
+            if is_double_hyphen_option(value) {
+                // if double hyphen idiom is identified do not set index to it and return the counter
+                return counter;
+            } else if value == "-" {
+                // ignore single hyphen idiom, it is not an option
+                continue;
+            }
+            counter = index;
+        }
+    }
+
+    counter
+}
+
 /// Returns boolean for the question "Is `needle` a definition option?".
 ///
 /// # Remarks
@@ -356,6 +374,29 @@ mod tests {
         ];
 
         assert_eq!(parse_mops(&test_vec), None);
+    }
+
+    #[test]
+    fn function_parse_loptind_index() {
+        let test_vec: Vec<String> = vec![
+            String::from("test"),
+            String::from("subcmd"),
+            String::from("-l"),
+            String::from("--last"),
+            String::from("--output=path"),
+            String::from("-"),
+            String::from("--"),
+            String::from("--nonparse"),
+            String::from("lastpos"),
+        ];
+
+        assert_eq!(parse_loptind_index(&test_vec), 4);
+    }
+
+    #[test]
+    fn function_parse_loptind_index_noargs() {
+        let test_vec: Vec<String> = vec![String::from("test")];
+        assert_eq!(parse_loptind_index(&test_vec), 0);
     }
 
     #[test]

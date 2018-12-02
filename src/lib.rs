@@ -65,6 +65,8 @@ pub struct Command {
     pub last_arg: Option<String>,
     /// `Option<Vec<String>>` of ordered arguments that follow a double hyphen command line idiom. `None` if a double hyphen argument is not present or there are no arguments after the double hyphen argument.
     pub double_hyphen_argv: Option<Vec<String>>,
+    /// `usize` that indicates the index position of the last positional option in `Command.argv`
+    pub loptind: usize,
 }
 
 // Traits
@@ -114,6 +116,7 @@ impl Command {
         let first_arg_definition = parsers::parse_first_arg(&arguments);
         let last_arg_definition = parsers::parse_last_arg(&arguments);
         let double_hyphen_definition = parsers::parse_double_hyphen_args(&arguments);
+        let last_option_index = parsers::parse_loptind_index(&arguments);
 
         Command {
             argv: arguments_definition,
@@ -124,6 +127,7 @@ impl Command {
             first_arg: first_arg_definition,
             last_arg: last_arg_definition,
             double_hyphen_argv: double_hyphen_definition,
+            loptind: last_option_index,
         }
     }
 
@@ -709,6 +713,24 @@ impl Command {
         self.argv.iter().position(|x| x == needle)
     }
 
+    /// Returns `usize` that defines the zero-based index position of the last positional option in the command sequence.
+    ///
+    /// Returns a value of `0` if there are no options present in the command.
+    ///
+    /// # Remarks
+    /// The index is not set at single hyphen only arguments `-`, nor at any argument in the command that begins with a hyphen following a double hyphen argument `--`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// let c = commandlines::Command::new();
+    ///
+    /// let i = c.get_index_of_last_option();
+    /// ```
+    pub fn get_index_of_last_option(&self) -> usize {
+        self.loptind
+    }
+
     /// Returns boolean for the question "Is the command a help request with a `-h` or `--help` flag?"
     ///
     /// # Examples
@@ -895,6 +917,41 @@ mod tests {
             "--another=otherdef".to_string(),
         ]);
         assert_eq!(c.double_hyphen_argv, None);
+    }
+
+    #[test]
+    fn command_instantiation_loptind_with_opts() {
+        let test_vec: Vec<String> = vec![
+            String::from("test"),
+            String::from("subcmd"),
+            String::from("-l"),
+            String::from("--last"),
+            String::from("--output=path"),
+            String::from("-"),  // should ignore single hyphen idiom
+            String::from("--"), // should ignore everything after double hyphen idiom
+            String::from("--nonparse"),
+            String::from("lastpos"),
+        ];
+        let c = Command::new_with_vec(test_vec);
+        assert_eq!(c.loptind, 4);
+    }
+
+    #[test]
+    fn command_instantiation_loptind_without_opts() {
+        let test_vec: Vec<String> = vec![
+            String::from("test"),
+            String::from("subcmd"),
+            String::from("lastpos"),
+        ];
+        let c = Command::new_with_vec(test_vec);
+        assert_eq!(c.loptind, 0);
+    }
+
+    #[test]
+    fn command_instantiation_loptind_without_args() {
+        let test_vec: Vec<String> = vec![String::from("test")];
+        let c = Command::new_with_vec(test_vec);
+        assert_eq!(c.loptind, 0);
     }
 
     #[test]
@@ -1419,6 +1476,23 @@ mod tests {
         assert_eq!(c.get_index_of("test"), Some(0));
         assert_eq!(c.get_index_of("-o"), Some(1));
         assert_eq!(c.get_index_of("missing"), None);
+    }
+
+    #[test]
+    fn command_method_get_index_of_last_option() {
+        let test_vec: Vec<String> = vec![
+            String::from("test"),
+            String::from("subcmd"),
+            String::from("-l"),
+            String::from("--last"),
+            String::from("--output=path"),
+            String::from("-"),  // should ignore single hyphen idiom
+            String::from("--"), // should ignore everything after double hyphen idiom
+            String::from("--nonparse"),
+            String::from("lastpos"),
+        ];
+        let c = Command::new_with_vec(test_vec);
+        assert_eq!(c.get_index_of_last_option(), 4);
     }
 
     #[test]
