@@ -186,6 +186,40 @@ impl Command {
         }
     }
 
+    /// Returns a boolean for the question "Does the command include any invalid options based upon valid option definitions present in `valid_opts`?"
+    ///
+    /// # Examples
+    /// Define valid options in a iterable data structure and pass a referene to this data structure as an argument to the method.
+    ///
+    /// ```
+    /// const VALIDOPTS: [&str; 7] = [
+    ///       "-h",
+    ///       "--help",
+    ///       "--usage",
+    ///       "-v",
+    ///       "--version",
+    ///       "-o",
+    ///       "--output",
+    /// ];
+    ///
+    /// let c = commandlines::Command::new();
+    ///
+    /// if c.has_invalid_options(&VALIDOPTS) {
+    ///     eprintln!("Invalid option detected");
+    /// }
+    /// ```
+    ///
+    ///
+    pub fn has_invalid_options(&self, valid_opts: &[&str]) -> bool {
+        for option in &self.options {
+            if !valid_opts.contains(&&option[..]) {
+                return true;
+            }
+        }
+
+        false
+    }
+
     /// Returns a boolean for the question "Does the command include any multi-option short syntax style option arguments?"
     ///
     /// # Remarks
@@ -227,40 +261,6 @@ impl Command {
     /// ```
     pub fn has_options(&self) -> bool {
         !self.options.is_empty()
-    }
-
-    /// Returns a boolean for the question "Does the command include any invalid options based upon valid option definitions present in `valid_opts`?"
-    ///
-    /// # Examples
-    /// Define valid options in a iterable data structure and pass a referene to this data structure as an argument to the method.
-    ///
-    /// ```
-    /// const VALIDOPTS: [&str; 7] = [
-    ///       "-h",
-    ///       "--help",
-    ///       "--usage",
-    ///       "-v",
-    ///       "--version",
-    ///       "-o",
-    ///       "--output",
-    /// ];
-    ///
-    /// let c = commandlines::Command::new();
-    ///
-    /// if c.has_invalid_options(&VALIDOPTS) {
-    ///     eprintln!("Invalid option detected");
-    /// }
-    /// ```
-    ///
-    ///
-    pub fn has_invalid_options(&self, valid_opts: &[&str]) -> bool {
-        for option in &self.options {
-            if !valid_opts.contains(&&option[..]) {
-                return true;
-            }
-        }
-
-        false
     }
 
     /// Returns a boolean for the question "Does the command include the argument string `needle`?" at any index
